@@ -9,7 +9,7 @@ import { TokenService } from './core/domain/service/token.service';
 import { UserController } from './adapters/api/controller/auth.controller';
 import { UserRepository } from './core/domain/repository/user.repository';
 import { UpdateUserTypeUseCase } from './core/usecases/update-user-type.use-case';
-import { CreateChapterUseCase } from './core/usecases/create-chapter.use-case';
+import { CreateChapterUseCase } from './core/usecases/create-session.use-case';
 import { ChapterRepository } from './core/domain/repository/userEmotion.repository';
 import { PrismaChapterRepository } from './adapters/prisma/prisma-session.repository';
 import { UpdateChapterUseCase } from './core/usecases/update-chapter.use-case';

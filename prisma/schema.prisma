@@ -1,132 +1,132 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql" // ou mysql/sqlite selon ton cas
   url      = env("DATABASE_URL")
 }
 
 model User {
   id             Int                 @id @default(autoincrement())
-  EmoProfileId   string                 @unique
+  emoProfileId   Int                 @unique
+  emoProfile     UserEmotionProfile  @relation(fields: [emoProfileId], references: [id])
   name           String
-  firstName     String
-  passwordHash   String
-  email          String
-  phoneNumber    String
+  first_name     String
+  passwordHash  String
+  email          String             @unique
+  phone_number   String?
 
-  emotionProfile UserEmotionProfile   @relation(fields: [EmoProfileId], references: [id])
-  sessions       Session[]
+  @@map("User")
 }
 
 model UserEmotionProfile {
-  id       Int           @id @default(autoincrement())
-  userId   Int
-  user     User?
-  emotions UserEmotion[]
+  id        Int            @id @default(autoincrement())
+  user      User?          // Must be optional for 1:1 back-reference
+  emotions  UserEmotion[]
+  sessions  Session[]
+
+  @@map("UserEmotionProfile")
 }
 
 model UserEmotion {
-  id                    Int                     @id @default(autoincrement())
-  userEmotionProfileId  string
-  emotionId             string
-  genres                Genre[]
+  id                      Int                   @id @default(autoincrement())
+  userEmotionProfile      UserEmotionProfile    @relation(fields: [userEmotionProfileId], references: [id])
+  userEmotionProfileId    Int
+  emotion                 Emotion               @relation(fields: [emotionId], references: [id])
+  emotionId               Int
+  customGenreRatings      UserGenrePreference[]
 
-  profile   UserEmotionProfile @relation(fields: [userEmotionProfileId], references: [id])
-  emotion   Emotion            @relation(fields: [emotionId], references: [id])
-  genreRates UserCustomGenreRate[]
+  @@map("UserEmotion")
 }
 
-model UserCustomGenreRate {
-  id            Int         @id @default(autoincrement())
-  genreId       string
-  userEmotionId string
-  rating        Int
-  bpm           Int
-  speechiness   Int
-  energy        Int
+model UserGenrePreference {
+  id             Int        @id @default(autoincrement())
+  genre          Genre      @relation(fields: [genreId], references: [id])
+  genreId        Int
+  userEmotion    UserEmotion @relation(fields: [userEmotionId], references: [id])
+  userEmotionId  Int
+  rating         Int
+  bpm            Int
+  speechiness    Int
+  energy         Int
 
-  genre       Genre       @relation(fields: [genreId], references: [id])
-  userEmotion UserEmotion @relation(fields: [userEmotionId], references: [id])
+  @@map("UserGenrePreference")
 }
 
 model Genre {
-  id       Int     @id @default(autoincrement())
-  name     String
-  iconUrl  String
+  id        Int                    @id @default(autoincrement())
+  name      String
+  icon_url  String
+  tracks    Track[]
+  ratings   UserGenrePreference[]
 
-  tracks   Track[]
-  ratings  UserCustomGenreRate[]
+  @@map("Genre")
 }
 
 model Emotion {
-  id       Int     @id @default(autoincrement())
-  name     String
-  iconUrl  String
+  id           Int        @id @default(autoincrement())
+  name         String
+  icon_url     String
+  userEmotions UserEmotion[]
+  fromSessions Session[] @relation("FromEmotion")
+  toSessions   Session[] @relation("ToEmotion")
 
-  userEmotions    UserEmotion[]
-  sessionsFrom    Session[] @relation("FromEmotion")
-  sessionsTo      Session[] @relation("ToEmotion")
+  @@map("Emotion")
 }
 
 model Track {
-  id          Int     @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   name        String
   length      Int
   track_href  String
   bpm         Int
-  genreId     Int
   speechiness Int
   energy      Int
+  genre       Genre         @relation(fields: [genreId], references: [id])
+  genreId     Int
+  sessionTracks SessionTrack[]
 
-  genre       Genre   @relation(fields: [genreId], references: [id])
-  sessions    SessionTrack[]
+  @@map("Track")
 }
 
 model Session {
-  id            Int      @id @default(autoincrement())
-  duration      Int
-  userId        Int
-  fromEmotionId Int
-  toEmotionId   Int
+  id                      Int             @id @default(autoincrement())
+  duration                Int
+  userEmotionProfile      UserEmotionProfile @relation(fields: [userEmotionProfileId], references: [id])
+  userEmotionProfileId    Int
+  fromEmotion             Emotion         @relation("FromEmotion", fields: [fromEmotionId], references: [id])
+  fromEmotionId           Int
+  toEmotion               Emotion         @relation("ToEmotion", fields: [toEmotionId], references: [id])
+  toEmotionId             Int
+  phases                  SessionPhase[]
 
-  user        User     @relation(fields: [userId], references: [id])
-  fromEmotion Emotion  @relation("FromEmotion", fields: [fromEmotionId], references: [id])
-  toEmotion   Emotion  @relation("ToEmotion", fields: [toEmotionId], references: [id])
-  phases      Phase[]
+  @@map("Session")
+}
+
+model SessionPhase {
+  id         Int            @id @default(autoincrement())
+  session    Session        @relation(fields: [sessionId], references: [id])
+  sessionId  Int
+  name       String
+  order_index Int
+  fromBpm Int
+  toBpm Int
+  fromSpeechiness Int
+  toSpeechiness Int
+  fromEnergy Int
+  toEnergy Int
+  tracks     SessionTrack[]
+
+  @@map("SessionPhase")
 }
 
 model SessionTrack {
-  sessionId Int
-  trackId   Int
-  order Int
+  sessionPhase  SessionPhase @relation(fields: [sessionPhaseId], references: [id])
+  sessionPhaseId Int
+  track          Track        @relation(fields: [trackId], references: [id])
+  trackId        Int
 
-  session   Session @relation(fields: [sessionId], references: [id])
-  track     Track   @relation(fields: [trackId], references: [id])
-
-  @@id([sessionId, trackId])
-}
-
-model Phase {
-  id              Int      @id @default(autoincrement())
-  sessionId       Int
-  phaseNumber     Int
-  duration        Int
-  startBpm        Int
-  targetBpm       Int
-  startEnergy     Int
-  targetEnergy    Int
-  startSpeechiness Int
-  targetSpeechiness Int
-  TracksCount Int
-  session         Session  @relation(fields: [sessionId], references: [id])
-  tracks          Track[]  @relation("PhaseTracks")
-  genres          Genre[]  @relation("PhaseGenres")
+  @@id([sessionPhaseId, trackId])
+  @@map("SessionTrack")
 }

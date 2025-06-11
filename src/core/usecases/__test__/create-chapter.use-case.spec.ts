@@ -1,7 +1,7 @@
 import {
   CreateChapterCommand,
   CreateChapterUseCase,
-} from '../create-chapter.use-case';
+} from '../create-session.use-case';
 import { ChapterRepository } from '../../domain/repository/userEmotion.repository';
 import { InMemoryChapterRepository } from '../../../adapters/in-memory/in-memory-chapter.repository';
 import { User } from '../../domain/model/User';

@@ -12,7 +12,7 @@ import {
   ApiOperation,
 } from '@nestjs/swagger';
 import { CreateChapterResponse } from '../response/create-chapter.response';
-import { CreateChapterUseCase } from '../../../core/usecases/create-chapter.use-case';
+import { CreateChapterUseCase } from '../../../core/usecases/create-session.use-case';
 import { CreateChapterRequest } from '../request/create-chapter.request';
 import { CreateChapterMapper } from '../mapper/create-chapter.mapper';
 import { UpdateChapterUseCase } from '../../../core/usecases/update-chapter.use-case';

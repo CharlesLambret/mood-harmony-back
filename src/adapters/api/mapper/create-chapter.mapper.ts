@@ -1,4 +1,4 @@
-import { CreateChapterCommand } from '../../../core/usecases/create-chapter.use-case';
+import { CreateChapterCommand } from '../../../core/usecases/create-session.use-case';
 import { CreateChapterRequest } from '../request/create-chapter.request';
 import { Chapter } from '../../../core/domain/model/Track';
 import { CreateChapterResponse } from '../response/create-chapter.response';
