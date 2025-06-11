@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUnitResponse {
   @ApiProperty()
-  id: string;
+  id: number;
 
   @ApiProperty()
   title: string;
@@ -23,7 +23,7 @@ export class UpdateUnitResponse {
   createdAt: Date;
 
   constructor(
-    id: string,
+    id: number,
     title: string,
     description: string,
     chapterId: string,

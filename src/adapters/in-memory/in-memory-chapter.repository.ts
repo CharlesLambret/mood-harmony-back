@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ChapterRepository } from '../../core/domain/repository/emotion.repository';
+import { ChapterRepository } from '../../core/domain/repository/userEmotion.repository';
 import { Chapter } from '../../core/domain/model/Track';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class InMemoryChapterRepository implements ChapterRepository {
     return chapter;
   }
 
-  findById(id: string): Chapter | null {
+  findById(id: number): Chapter | null {
     return this.chapters.get(id) || null;
   }
 
@@ -20,7 +20,7 @@ export class InMemoryChapterRepository implements ChapterRepository {
     return Array.from(this.chapters.values());
   }
 
-  update(id: string, chapter: Chapter): Chapter | null {
+  update(id: number, chapter: Chapter): Chapter | null {
     if (!this.chapters.has(id)) {
       return null;
     }
@@ -28,7 +28,7 @@ export class InMemoryChapterRepository implements ChapterRepository {
     return chapter;
   }
 
-  remove(id: string): void {
+  remove(id: number): void {
     this.chapters.delete(id);
   }
 

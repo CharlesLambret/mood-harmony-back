@@ -11,7 +11,7 @@ export class UserEmotion extends DomainModel {
   createdAt: Date;
 
   constructor(
-    id: string,
+    id: number,
     userEmotionalProfile: UserEmotionalProfile,
     emotion: Emotion,
     genres: Genre[],

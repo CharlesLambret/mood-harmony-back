@@ -1,19 +1,21 @@
 import { DomainModel } from '../../base/domain-model';
-import { UserType } from '../type/UserType';
+import { UserEmotionalProfile } from './UserEmotionalProfile';
 
 export class User extends DomainModel {
   email: string;
-  passwordHash: string;
+  password: string;
   name: string;
   firstName: string;
+  emotionProfile : UserEmotionalProfile;
   updatedAt: Date;
   createdAt: Date;
 
   constructor(
-    id: string,
+    id: number,
     email: string,
-    passwordHash: string,
-    type: UserType,
+    password: string,
+    emotionProfile : UserEmotionalProfile,
+
     name: string,
     firstName: string,
     updatedAt?: Date,
@@ -21,9 +23,11 @@ export class User extends DomainModel {
   ) {
     super(id);
     this.email = email;
-    this.passwordHash = passwordHash;
+    this.password = password;
     this.name = name;
     this.firstName = firstName;
+    this.emotionProfile = emotionProfile;
+
     this.updatedAt = updatedAt || new Date();
     this.createdAt = createdAt || new Date();
   }

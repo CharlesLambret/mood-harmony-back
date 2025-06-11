@@ -22,11 +22,11 @@ export class InMemoryRefreshTokenRepository implements RefreshTokenRepository {
     return Array.from(this.store.values());
   }
 
-  findById(id: string): RefreshToken | null {
+  findById(id: number): RefreshToken | null {
     return this.store.get(id) ?? null;
   }
 
-  update(id: string, data: Partial<RefreshToken>): RefreshToken | null {
+  update(id: number, data: Partial<RefreshToken>): RefreshToken | null {
     const existing = this.store.get(id);
     if (!existing) return null;
     const updated = { ...existing, ...data } as RefreshToken;
@@ -34,7 +34,7 @@ export class InMemoryRefreshTokenRepository implements RefreshTokenRepository {
     return updated;
   }
 
-  delete(id: string): RefreshToken {
+  delete(id: number): RefreshToken {
     const existing = this.store.get(id);
     if (!existing) {
       throw new Error(`RefreshToken with id ${id} not found`);
@@ -60,7 +60,7 @@ export class InMemoryRefreshTokenRepository implements RefreshTokenRepository {
     return null;
   }
 
-  remove(id: string): void {
+  remove(id: number): void {
     this.store.delete(id);
   }
 

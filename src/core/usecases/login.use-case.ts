@@ -38,13 +38,11 @@ export class LoginUseCase implements UseCase<LoginCommand, LoginResult> {
     const accessToken = this.tokenService.generateAccessToken({
       id: user.id,
       email: user.email,
-      type: user.type,
     });
 
     const refreshToken = this.tokenService.generateRefreshToken({
       id: user.id,
       email: user.email,
-      type: user.type,
     });
 
     await this.refreshTokenRepository.create({

@@ -5,7 +5,7 @@ export class RefreshToken extends DomainModel {
   token: string;
   expiresAt: Date;
 
-  constructor(id: string, userId: string, token: string, expiresAt: Date) {
+  constructor(id: number, userId: string, token: string, expiresAt: Date) {
     super(id);
     this.userId = userId;
     this.token = token;

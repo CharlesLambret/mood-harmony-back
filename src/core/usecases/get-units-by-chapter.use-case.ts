@@ -1,6 +1,6 @@
 import { UseCase } from '../base/use-case';
 import { Unit } from '../domain/model/Genre';
-import { UnitRepository } from '../domain/repository/unit.repository';
+import { UnitRepository } from '../domain/repository/track.repository';
 import { User } from '../domain/model/User';
 import { UserType } from '../domain/type/UserType';
 import { UserNotAllowedError } from '../domain/error/UserNotAllowedError';

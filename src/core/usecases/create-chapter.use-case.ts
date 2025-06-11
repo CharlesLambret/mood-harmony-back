@@ -1,6 +1,6 @@
 import { UseCase } from '../base/use-case';
 import { Chapter } from '../domain/model/Track';
-import { ChapterRepository } from '../domain/repository/emotion.repository';
+import { ChapterRepository } from '../domain/repository/userEmotion.repository';
 import { User } from '../domain/model/User';
 import { UserType } from '../domain/type/UserType';
 import { UserNotAllowedError } from '../domain/error/UserNotAllowedError';

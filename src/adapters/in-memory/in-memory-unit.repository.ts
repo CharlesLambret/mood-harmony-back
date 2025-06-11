@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UnitRepository } from '../../core/domain/repository/unit.repository';
+import { UnitRepository } from '../../core/domain/repository/track.repository';
 import { Unit } from '../../core/domain/model/Genre';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class InMemoryUnitRepository implements UnitRepository {
     return unit;
   }
 
-  findById(id: string): Unit | null {
+  findById(id: number): Unit | null {
     return this.units.get(id) || null;
   }
 
@@ -31,7 +31,7 @@ export class InMemoryUnitRepository implements UnitRepository {
     );
   }
 
-  update(id: string, unit: Unit): Unit | null {
+  update(id: number, unit: Unit): Unit | null {
     if (!this.units.has(id)) {
       return null;
     }
@@ -39,7 +39,7 @@ export class InMemoryUnitRepository implements UnitRepository {
     return unit;
   }
 
-  remove(id: string): void {
+  remove(id: number): void {
     this.units.delete(id);
   }
 

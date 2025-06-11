@@ -19,7 +19,7 @@ export class InMemoryUserRepository implements UserRepository {
     return user;
   }
 
-  findById(id: string): User | null {
+  findById(id: number): User | null {
     return this.users.get(id) || null;
   }
 
@@ -36,7 +36,7 @@ export class InMemoryUserRepository implements UserRepository {
     return Array.from(this.users.values());
   }
 
-  update(id: string, user: User): User | null {
+  update(id: number, user: User): User | null {
     if (!this.users.has(id)) {
       return null;
     }
@@ -44,7 +44,7 @@ export class InMemoryUserRepository implements UserRepository {
     return user;
   }
 
-  remove(id: string): void {
+  remove(id: number): void {
     this.users.delete(id);
   }
 

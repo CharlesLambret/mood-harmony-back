@@ -1,41 +1,30 @@
 import { DomainModel } from '../../base/domain-model';
 import { SessionPhase } from './SessionPhase';
+import {Emotion} from './Emotion';
 
 export class Session extends DomainModel {
-    userId: number;
+    userEmotionalProfileId: number;
     duration: number;
-    fromEmotionId: number;
-    toEmotionId: number;
+    fromEmotion: Emotion;
+    toEmotion: Emotion;
     phases: SessionPhase[];
     updatedAt: Date;
     createdAt: Date;
 
-    startBpm: number;
-    targetBpm: number;
-    startEnergy: number;
-    targetEnergy: number;
-    startSpeechiness: number;
-    targetSpeechiness: number;
-
     constructor(
-        id: string,
-        userId: number,
+        id: number,
+        userEmotionalProfileId: number,
         duration: number,
-        fromEmotionId: number,
-        toEmotionId: number,
+        fromEmotion: Emotion,
+        toEmotion: Emotion,
         phases: SessionPhase[] = [],
         updatedAt?: Date,
         createdAt?: Date,
-        startBpm?: number,
-        targetBpm?: number,
-        startEnergy?: number,
-        targetEnergy?: number,
-        startSpeechiness?: number,
-        targetSpeechiness?: number,
+
     ) {
         super(id);
 
-        if (!userId) {
+        if (!userEmotionalProfileId) {
             throw new Error('User ID is required');
         }
 
@@ -43,28 +32,23 @@ export class Session extends DomainModel {
             throw new Error('Duration must be greater than 0');
         }
 
-        if (!fromEmotionId) {
+        if (!fromEmotion) {
             throw new Error('From emotion ID is required');
         }
 
-        if (!toEmotionId) {
+        if (!toEmotion) {
             throw new Error('To emotion ID is required');
         }
 
-        this.userId = userId;
+        this.userEmotionalProfileId = userEmotionalProfileId;
         this.duration = duration;
-        this.fromEmotionId = fromEmotionId;
-        this.toEmotionId = toEmotionId;
+        this.fromEmotion = fromEmotion;
+        this.toEmotion = toEmotion;
         this.phases = phases;
         this.updatedAt = updatedAt || new Date();
         this.createdAt = createdAt || new Date();
 
-        this.startBpm = startBpm ?? 0;
-        this.targetBpm = targetBpm ?? 0;
-        this.startEnergy = startEnergy ?? 0;
-        this.targetEnergy = targetEnergy ?? 0;
-        this.startSpeechiness = startSpeechiness ?? 0;
-        this.targetSpeechiness = targetSpeechiness ?? 0;
+        
     }
 
     get totalDuration(): number {

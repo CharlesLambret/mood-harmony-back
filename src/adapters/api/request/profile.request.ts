@@ -1,7 +1,7 @@
 import { UserType } from '../../../core/domain/type/UserType';
 
 export type ProfileRequest = {
-  id: string;
+  id: number;
   email: string;
   type: UserType;
 };

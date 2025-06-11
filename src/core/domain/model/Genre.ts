@@ -7,7 +7,7 @@ export class Genre extends DomainModel {
   createdAt: Date;
 
   constructor(
-    id: string,
+    id: number,
     name: string,
     iconUrl: string,
    

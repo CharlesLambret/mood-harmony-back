@@ -24,20 +24,20 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
     return this.prisma.refreshToken.findMany();
   }
 
-  async findById(id: string) {
+  async findById(id: number) {
     return this.prisma.refreshToken.findUnique({
       where: { id },
     });
   }
 
-  async update(id: string, data: Partial<{ token: string; expiresAt: Date }>) {
+  async update(id: number, data: Partial<{ token: string; expiresAt: Date }>) {
     return this.prisma.refreshToken.update({
       where: { id },
       data,
     });
   }
 
-  async delete(id: string) {
+  async delete(id: number) {
     return this.prisma.refreshToken.delete({
       where: { id },
     });
@@ -56,7 +56,7 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
     });
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: number): Promise<void> {
     await this.prisma.user.delete({ where: { id } });
   }
 

@@ -1,23 +1,34 @@
 import { Track } from "./Track";
+import { DomainModel } from '../../base/domain-model';
 
-export class SessionPhase {
-  sessionId: string;
+export class SessionPhase extends DomainModel {
+  sessionId: number;
   phaseNumber: number;
   duration: number;
-  targetBpm: number;
-  targetEnergy: number;
-  targetSpeechiness: number;
+  fromBpm : number
+  toBpm: number;
+  fromSpeechiness: number;
+  toSpeechiness: number;
+  fromEnergy: number;
+  toEnergy: number;
   tracks: Track[];
 
   constructor(
-    sessionId: string,
+    id: number,
+
+    sessionId: number,
     phaseNumber: number,
     duration: number,
-    targetBpm: number,
-    targetEnergy: number,
-    targetSpeechiness: number,
+    fromBpm : number,
+    toBpm: number,
+    fromSpeechiness: number,
+    toSpeechiness: number,
+    fromEnergy: number,
+    toEnergy: number,
     tracks: Track[] = []
   ) {
+    super(id);
+
     if (!sessionId) {
       throw new Error('Session ID is required');
     }
@@ -30,24 +41,27 @@ export class SessionPhase {
       throw new Error('Duration must be greater than 0');
     }
 
-    if (targetBpm <= 0) {
-      throw new Error('Target BPM must be greater than 0');
+    if (fromBpm <= 0 || toBpm <= 0) {
+      throw new Error('Start and target BPM must be greater than 0');
     }
 
-    if (targetEnergy < 0 || targetEnergy > 100) {
-      throw new Error('Target energy must be between 0 and 100');
+    if (fromEnergy < 0 || fromEnergy > 1 || toEnergy < 0 || toEnergy > 1 ) {
+      throw new Error(' Start and target energy must be between 0 and 1');
     }
 
-    if (targetSpeechiness < 0 || targetSpeechiness > 100) {
+    if (fromSpeechiness < 0 || fromSpeechiness > 100 || toSpeechiness < 0 || toSpeechiness > 100 ) {
       throw new Error('Target speechiness must be between 0 and 100');
     }
 
     this.sessionId = sessionId;
     this.phaseNumber = phaseNumber;
     this.duration = duration;
-    this.targetBpm = targetBpm;
-    this.targetEnergy = targetEnergy;
-    this.targetSpeechiness = targetSpeechiness;
+    this.toBpm = toBpm;
+    this.fromBpm = fromBpm;
+    this.fromSpeechiness = fromSpeechiness;
+    this.toSpeechiness = toSpeechiness;
+    this.fromEnergy = fromEnergy;
+    this.toEnergy = toEnergy;
     this.tracks = tracks;
   }
 
@@ -59,6 +73,6 @@ export class SessionPhase {
     this.tracks.push(track);
   }
   deleteTrack(trackId: string): void {
-    this.tracks = this.tracks.filter(track => track.id !== trackId);
+    this.tracks = this.tracks.filter(track => track.id !== Number(trackId));
   }
 }

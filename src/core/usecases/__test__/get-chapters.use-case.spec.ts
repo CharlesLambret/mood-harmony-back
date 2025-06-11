@@ -1,4 +1,4 @@
-import { ChapterRepository } from '../../domain/repository/emotion.repository';
+import { ChapterRepository } from '../../domain/repository/userEmotion.repository';
 import { InMemoryChapterRepository } from '../../../adapters/in-memory/in-memory-chapter.repository';
 import { User } from '../../domain/model/User';
 import { UserType } from '../../domain/type/UserType';

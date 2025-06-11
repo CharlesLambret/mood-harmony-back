@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserType } from '../../core/domain/type/UserType';
 
 export type TokenPayload = {
-  id: string;
+  id: number;
   email: string;
   type: UserType;
 };

@@ -1,5 +1,5 @@
 import { DomainModel } from '../../base/domain-model';
-
+import { Genre } from './Genre';
 export class Track extends DomainModel {
   name: string;
   length: number;
@@ -7,17 +7,19 @@ export class Track extends DomainModel {
   bpm: number;
   speechiness: number;
   energy: number;
+  genre : Genre;
   updatedAt: Date;
   createdAt: Date;
 
   constructor(
-    id: string,
+    id: number,
     name: string,
     length: number,
     trackHref: string,
     bpm: number,
     speechiness: number,
     energy: number,
+    genre : Genre,
     updatedAt?: Date,
     createdAt?: Date,
   ) {
@@ -37,6 +39,7 @@ export class Track extends DomainModel {
     this.bpm = bpm;
     this.speechiness = speechiness;
     this.energy = energy;
+    this.genre = genre;
     this.updatedAt = updatedAt || new Date();
     this.createdAt = createdAt || new Date();
   }

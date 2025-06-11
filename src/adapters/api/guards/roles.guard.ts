@@ -11,7 +11,7 @@ import { UserType } from '../../../core/domain/type/UserType';
 import { ROLES_KEY } from '../decorator/roles.decorator';
 
 type AuthenticatedUser = {
-  id: string;
+  id: number;
   email: string;
   type: UserType;
 };

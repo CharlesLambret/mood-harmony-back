@@ -10,7 +10,7 @@ export class UserEmotionalProfile extends DomainModel {
   createdAt: Date;
 
   constructor(
-    id: string,
+    id: number,
     user: User,
     userEmotions: UserEmotion[],
     updatedAt?: Date,
