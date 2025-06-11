@@ -14,10 +14,9 @@ export class User extends DomainModel {
     id: number,
     email: string,
     password: string,
-    emotionProfile : UserEmotionalProfile,
-
     name: string,
     firstName: string,
+    emotionProfile : UserEmotionalProfile,
     updatedAt?: Date,
     createdAt?: Date,
   ) {

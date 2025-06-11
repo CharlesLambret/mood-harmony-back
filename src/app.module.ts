@@ -1,29 +1,3 @@
-import { Module } from '@nestjs/common';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { CreateUserUseCase } from './core/usecases/create-user.use-case';
-import { JwtServiceAdapter } from './adapters/jwt/jwt.service';
-import { LoginUseCase } from './core/usecases/login.use-case';
-import { PrismaService } from './adapters/prisma/prisma.service';
-import { PrismaUserRepository } from './adapters/prisma/prisma-user.repository';
-import { TokenService } from './core/domain/service/token.service';
-import { UserController } from './adapters/api/controller/auth.controller';
-import { UserRepository } from './core/domain/repository/user.repository';
-import { UpdateUserTypeUseCase } from './core/usecases/update-user-type.use-case';
-import { CreateChapterUseCase } from './core/usecases/create-session.use-case';
-import { ChapterRepository } from './core/domain/repository/userEmotion.repository';
-import { PrismaChapterRepository } from './adapters/prisma/prisma-session.repository';
-import { UpdateChapterUseCase } from './core/usecases/update-chapter.use-case';
-import { GetChapterByIdUseCase } from './core/usecases/get-chapter-by-id.use-case';
-import { UnitRepository } from './core/domain/repository/track.repository';
-import { PrismaUnitRepository } from './adapters/prisma/prisma-unit.repository';
-import { CreateUnitUseCase } from './core/usecases/create-unit';
-import { UpdateUnitUseCase } from './core/usecases/update-unit.use-case';
-import { GetUnitByIdUseCase } from './core/usecases/get-units-by-id.use-case';
-import { getUnitsByChapterIdUseCase } from './core/usecases/get-units-by-chapter.use-case';
-import { ChapterController } from './adapters/api/controller/chapter.controller';
-import { UnitController } from './adapters/api/controller/unit.controller';
-import { GetChaptersUseCase } from './core/usecases/get-chapters.use-case';
-import { RefreshTokenRepository } from './core/domain/repository/refresh-token.repository';
 
 @Module({
   imports: [JwtModule.register({})],

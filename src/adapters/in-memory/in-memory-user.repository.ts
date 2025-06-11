@@ -6,21 +6,23 @@ import { Injectable } from '@nestjs/common';
 export class InMemoryUserRepository implements UserRepository {
   private users: Map<string, User> = new Map();
 
-  create(data: Pick<User, 'id' | 'email' | 'password' | 'type'>): User {
+  create(data: Pick<User, 'id' | 'email' | 'password' | 'name' | 'firstName' | 'emotionProfile' >): User {
     const user = new User(
       data.id,
       data.email,
       data.password,
-      data.type,
+      data.name,
+      data.firstName,
+      data.emotionProfile,
       new Date(),
       new Date(),
     );
-    this.users.set(user.id, user);
+    this.users.set(user.id.toString(), user);
     return user;
   }
 
   findById(id: number): User | null {
-    return this.users.get(id) || null;
+    return this.users.get(id.toString()) || null;
   }
 
   findByEmail(email: string): User | null {
@@ -37,15 +39,15 @@ export class InMemoryUserRepository implements UserRepository {
   }
 
   update(id: number, user: User): User | null {
-    if (!this.users.has(id)) {
+    if (!this.users.has(id.toString())) {
       return null;
     }
-    this.users.set(id, user);
+    this.users.set(id.toString(), user);
     return user;
   }
 
   remove(id: number): void {
-    this.users.delete(id);
+    this.users.delete(id.toString());
   }
 
   removeAll(): void {

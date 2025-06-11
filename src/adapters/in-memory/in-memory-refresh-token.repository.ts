@@ -61,7 +61,7 @@ export class InMemoryRefreshTokenRepository implements RefreshTokenRepository {
   }
 
   remove(id: number): void {
-    this.store.delete(id);
+    this.store.delete(id.toString());
   }
 
   removeAll(): void {
