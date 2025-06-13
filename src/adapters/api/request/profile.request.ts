@@ -1,7 +1,9 @@
-import { UserType } from '../../../core/domain/type/UserType';
+import { UserEmotionalProfile } from "src/core/domain/model/UserEmotionalProfile";
 
 export type ProfileRequest = {
   id: number;
   email: string;
-  type: UserType;
+  name: string;
+  firstName: string;
+  emotionProfile: UserEmotionalProfile
 };

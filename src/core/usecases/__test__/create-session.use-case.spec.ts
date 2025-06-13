@@ -53,7 +53,6 @@ describe('GenerateSessionUseCase', () => {
       const userEmotionalProfile = { id: 1 } as any;
       const emotion = await emotionRepository.create({ name: 'Happy', iconUrl: 'icon.png' });
       const userEmotion = await userEmotionRepo.create({
-        userEmotionalProfile,
         emotion,
         genres: [],
       });
@@ -68,7 +67,7 @@ describe('GenerateSessionUseCase', () => {
       const userEmotionalProfile = { id: 1 } as any;
       const emotion = await emotionRepository.create({ name: 'Happy', iconUrl: 'icon.png' });
       const userEmotion = await userEmotionRepo.create({
-        userEmotionalProfile,
+        
         emotion,
         genres: [genre],
       });
@@ -92,7 +91,7 @@ describe('GenerateSessionUseCase', () => {
       const userEmotionalProfile = { id: 1 } as any;
       const emotion = await emotionRepository.create({ name: 'Happy', iconUrl: 'icon.png' });
       const userEmotion = await userEmotionRepo.create({
-        userEmotionalProfile,
+        
         emotion,
         genres: [genre],
       });
@@ -117,7 +116,7 @@ describe('GenerateSessionUseCase', () => {
       const userEmotionalProfile = { id: 1 } as any;
       const emotion = await emotionRepository.create({ name: 'Happy', iconUrl: 'icon.png' });
       const userEmotion = await userEmotionRepo.create({
-        userEmotionalProfile,
+        
         emotion,
         genres: [genre],
       });
@@ -183,7 +182,6 @@ describe('GenerateSessionUseCase', () => {
       // Create a dummy emotion and userEmotion for the test
       const emotion = await emotionRepository.create({ name: 'Happy', iconUrl: 'icon.png' });
       const userEmotion = await userEmotionRepo.create({
-        userEmotionalProfile,
         emotion,
         genres: [genre],
       });
@@ -225,7 +223,7 @@ describe('GenerateSessionUseCase', () => {
       // Create a dummy emotion and userEmotion for the test
       const emotion = await emotionRepository.create({ name: 'Happy', iconUrl: 'icon.png' });
       const userEmotion = await userEmotionRepo.create({
-        userEmotionalProfile,
+        
         emotion,
         genres: [genre],
       });

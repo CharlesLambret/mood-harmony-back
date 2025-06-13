@@ -1,100 +1,72 @@
+import { SessionController } from './adapters/api/controller/session.controller';
+import { GenerateSessionUseCase } from './core/usecases/create-session.use-case';
+import { SessionRepository } from './core/domain/repository/session.repository';
+import { EmotionRepository } from './core/domain/repository/emotion.repository';
+import { UserGenrePreferenceRepository } from './core/domain/repository/userGenrePreferences.repository';
+import { TrackRepository } from './core/domain/repository/track.repository';
+import { userEmotionRepository } from './core/domain/repository/userEmotion.repository';
+import { PrismaSessionRepository } from './adapters/prisma/prisma-session.repository';
+import { PrismaEmotionRepository
+import { PrismaUserGenrePreferenceRepository } from './adapters/prisma/prisma-userGenrePreference.repository';
+import { PrismaTrackRepository } from './adapters/prisma/prisma-track.repository';
+import { PrismaUserEmotionRepository } from './adapters/prisma/prisma-userEmotion.repository';
+import { PrismaService } from './adapters/prisma/prisma.service';
+import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [JwtModule.register({})],
-  controllers: [UserController, ChapterController, UnitController],
+  controllers: [
+    SessionController,
+  ],
   providers: [
     PrismaService,
-    JwtService,
     {
-      provide: 'TokenService',
-      useFactory: (jwtService: JwtService) => new JwtServiceAdapter(jwtService),
-      inject: [JwtService],
-    },
-    {
-      provide: UserRepository,
-      useFactory: (prisma: PrismaService) => new PrismaUserRepository(prisma),
+      provide: SessionRepository,
+      useFactory: (prisma: PrismaService) => new PrismaSessionRepository(prisma),
       inject: [PrismaService],
     },
     {
-      provide: ChapterRepository,
-      useFactory: (prisma: PrismaService) =>
-        new PrismaChapterRepository(prisma),
+      provide: EmotionRepository,
+      useFactory: (prisma: PrismaService) => new PrismaEmotionRepository(prisma),
       inject: [PrismaService],
     },
     {
-      provide: UnitRepository,
-      useFactory: (prisma: PrismaService) => new PrismaUnitRepository(prisma),
+      provide: UserGenrePreferenceRepository,
+      useFactory: (prisma: PrismaService) => new PrismaUserGenrePreferenceRepository(prisma),
       inject: [PrismaService],
     },
     {
-      provide: CreateUserUseCase,
-      useFactory: (userRepository: UserRepository) =>
-        new CreateUserUseCase(userRepository),
-      inject: [UserRepository],
+      provide: TrackRepository,
+      useFactory: (prisma: PrismaService) => new PrismaTrackRepository(prisma),
+      inject: [PrismaService],
     },
     {
-      provide: UpdateUserTypeUseCase,
-      useFactory: (userRepository: UserRepository) =>
-        new UpdateUserTypeUseCase(userRepository),
-      inject: [UserRepository],
+      provide: userEmotionRepository,
+      useFactory: (prisma: PrismaService) => new PrismaUserEmotionRepository(prisma),
+      inject: [PrismaService],
     },
     {
-      provide: LoginUseCase,
+      provide: GenerateSessionUseCase,
       useFactory: (
-        userRepository: UserRepository,
-        tokenService: TokenService,
-        refreshTokenRepository: RefreshTokenRepository,
+        sessionRepository: SessionRepository,
+        userEmotionRepository: userEmotionRepository,
+        userGenrePreferenceRepository: UserGenrePreferenceRepository,
+        trackRepository: TrackRepository,
+        emotionRepository: EmotionRepository,
       ) =>
-        new LoginUseCase(userRepository, refreshTokenRepository, tokenService),
-      inject: [UserRepository, 'TokenService'],
-    },
-    {
-      provide: CreateChapterUseCase,
-      useFactory: (chapterRepository: ChapterRepository) =>
-        new CreateChapterUseCase(chapterRepository),
-      inject: [ChapterRepository],
-    },
-    {
-      provide: UpdateChapterUseCase,
-      useFactory: (chapterRepository: ChapterRepository) =>
-        new UpdateChapterUseCase(chapterRepository),
-      inject: [ChapterRepository],
-    },
-    {
-      provide: GetChapterByIdUseCase,
-      useFactory: (chapterRepository: ChapterRepository) =>
-        new GetChapterByIdUseCase(chapterRepository),
-      inject: [ChapterRepository],
-    },
-    {
-      provide: GetChaptersUseCase,
-      useFactory: (chapterRepository: ChapterRepository) =>
-        new GetChaptersUseCase(chapterRepository),
-      inject: [ChapterRepository],
-    },
-    {
-      provide: CreateUnitUseCase,
-      useFactory: (unitRepository: UnitRepository) =>
-        new CreateUnitUseCase(unitRepository),
-      inject: [UnitRepository],
-    },
-    {
-      provide: UpdateUnitUseCase,
-      useFactory: (unitRepository: UnitRepository) =>
-        new UpdateUnitUseCase(unitRepository),
-      inject: [UnitRepository],
-    },
-    {
-      provide: GetUnitByIdUseCase,
-      useFactory: (unitRepository: UnitRepository) =>
-        new GetUnitByIdUseCase(unitRepository),
-      inject: [UnitRepository],
-    },
-    {
-      provide: getUnitsByChapterIdUseCase,
-      useFactory: (unitRepository: UnitRepository) =>
-        new getUnitsByChapterIdUseCase(unitRepository),
-      inject: [UnitRepository],
+        new GenerateSessionUseCase(
+          sessionRepository,
+          userEmotionRepository,
+          userGenrePreferenceRepository,
+          trackRepository,
+          emotionRepository,
+        ),
+      inject: [
+        SessionRepository,
+        userEmotionRepository,
+        UserGenrePreferenceRepository,
+        TrackRepository,
+        EmotionRepository,
+      ],
     },
   ],
 })

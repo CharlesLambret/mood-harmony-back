@@ -108,8 +108,8 @@ model SessionPhase {
   id         Int            @id @default(autoincrement())
   session    Session        @relation(fields: [sessionId], references: [id])
   sessionId  Int
-  name       String
-  order_index Int
+  phaseNumber Int
+  duration Int
   fromBpm Int
   toBpm Int
   fromSpeechiness Int
