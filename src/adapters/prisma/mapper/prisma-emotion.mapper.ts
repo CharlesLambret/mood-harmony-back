@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 type EmotionEntity = {
   id: number;
   name: string;
-  icon_url: string;
+  iconUrl: string;
   updatedAt?: Date;
   createdAt?: Date;
 };
@@ -16,7 +16,7 @@ export class PrismaEmotionMapper implements EntityMapper<Emotion, EmotionEntity>
     return {
       id: model.id,
       name: model.name,
-      icon_url: model.iconUrl,
+      iconUrl: model.iconUrl,
       updatedAt: model.updatedAt,
       createdAt: model.createdAt,
     };
@@ -26,7 +26,7 @@ export class PrismaEmotionMapper implements EntityMapper<Emotion, EmotionEntity>
     return new Emotion(
       entity.id,
       entity.name,
-      entity.icon_url,
+      entity.iconUrl,
       entity.updatedAt,
       entity.createdAt
     );

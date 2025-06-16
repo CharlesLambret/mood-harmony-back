@@ -18,8 +18,8 @@ type SessionEntityWithRelations = {
   phases?: {
     id: number;
     sessionId: number;
-    name: string;
-    order_index: number;
+    phaseNumber: number;
+    duration: number;
     fromBpm: number;
     toBpm: number;
     fromSpeechiness: number;
@@ -44,12 +44,12 @@ type SessionEntityWithRelations = {
   fromEmotion?: {
     id: number;
     name: string;
-    icon_url: string;
+    iconUrl: string;
   };
   toEmotion?: {
     id: number;
     name: string;
-    icon_url: string;
+    iconUrl: string;
   };
 };
 
@@ -83,13 +83,13 @@ export class PrismaSessionMapper implements EntityMapper<Session, SessionEntityW
     const fromEmotion = new Emotion(
       entity.fromEmotion?.id || entity.fromEmotionId,
       entity.fromEmotion?.name || '',
-      entity.fromEmotion?.icon_url || ''
+      entity.fromEmotion?.iconUrl || ''
     );
 
     const toEmotion = new Emotion(
       entity.toEmotion?.id || entity.toEmotionId,
       entity.toEmotion?.name || '',
-      entity.toEmotion?.icon_url || ''
+      entity.toEmotion?.iconUrl || ''
     );
 
     // Mapper les phases si elles existent
@@ -103,14 +103,18 @@ export class PrismaSessionMapper implements EntityMapper<Session, SessionEntityW
         sessionTrack.track.bpm,
         sessionTrack.track.speechiness,
         sessionTrack.track.energy,
-        new Genre(sessionTrack.track.genreId, '', '')
+        new Genre(
+          sessionTrack.track.genreId,
+          'Pop', 
+          'icon.url'  
+        )
       )
     ) || [];
 
     return new SessionPhase(
       phase.id,
       phase.sessionId,
-      phase.order_index,      
+      phase.phaseNumber,      
       entity.duration,        
       phase.fromBpm,
       phase.toBpm,

@@ -1,25 +1,31 @@
 import { EntityMapper } from '../../../core/base/entity-mapper';
 import { UserEmotion } from '../../../core/domain/model/UserEmotion';
 import { Emotion } from '../../../core/domain/model/Emotion';
-import { Genre } from '../../../core/domain/model/Genre';
+import { UserGenrePreference } from '../../../core/domain/model/UserGenrePreferences';
 import { Injectable } from '@nestjs/common';
 
-// L'entité Prisma UserEmotion inclut les relations nécessaires
 type UserEmotionEntity = {
   id: number;
+  
   emotion: {
     id: number;
     name: string;
-    icon_url: string;
+    iconUrl: string;
     updatedAt?: Date;
     createdAt?: Date;
   };
-  genres: {
+  userId: number; 
+  userEmotionProfileId: number;
+  userGenrePreferences: {
     id: number;
-    name: string;
-    icon_url: string;
+    genreId: number;
+    rating: number;
+    bpm: number;
+    speechiness: number;
+    energy: number;
     updatedAt?: Date;
     createdAt?: Date;
+    // ... autres champs si besoin
   }[];
   updatedAt?: Date;
   createdAt?: Date;
@@ -33,16 +39,22 @@ export class PrismaUserEmotionMapper implements EntityMapper<UserEmotion, UserEm
       emotion: {
         id: model.emotion.id,
         name: model.emotion.name,
-        icon_url: model.emotion.iconUrl,
+        iconUrl: model.emotion.iconUrl,
         updatedAt: model.emotion.updatedAt,
         createdAt: model.emotion.createdAt,
       },
-      genres: model.genres.map(genre => ({
-        id: genre.id,
-        name: genre.name,
-        icon_url: genre.iconUrl,
-        updatedAt: genre.updatedAt,
-        createdAt: genre.createdAt,
+      userId: model.userId,
+      userEmotionProfileId: model.userEmotionProfileId,
+      userGenrePreferences: model.userGenrePreferences.map(pref => ({
+        id: pref.id,
+        genreId: pref.genreId,
+        rating: pref.rating,
+        bpm: pref.bpm,
+        speechiness: pref.speechiness,
+        energy: pref.energy,
+        updatedAt: pref.updatedAt,
+        createdAt: pref.createdAt,
+        // ... autres champs si besoin
       })),
       updatedAt: model.updatedAt,
       createdAt: model.createdAt,
@@ -53,20 +65,26 @@ export class PrismaUserEmotionMapper implements EntityMapper<UserEmotion, UserEm
     return new UserEmotion(
       entity.id,
       new Emotion(
-        entity.emotion.id,
-        entity.emotion.name,
-        entity.emotion.icon_url,
-        entity.emotion.updatedAt,
-        entity.emotion.createdAt
+      entity.emotion.id,
+      entity.emotion.name,
+      entity.emotion.iconUrl,
+      entity.emotion.updatedAt,
+      entity.emotion.createdAt
       ),
-      entity.genres.map(
-        genre =>
-          new Genre(
-            genre.id,
-            genre.name,
-            genre.icon_url,
-            genre.updatedAt,
-            genre.createdAt
+      entity.userId,
+      entity.userEmotionProfileId,
+      entity.userGenrePreferences.map(
+        pref =>
+          new UserGenrePreference(
+            pref.id,
+            entity.id, // userEmotionId
+            pref.genreId, // genreId (assure-toi que ce champ existe dans l'entité)
+            pref.rating,
+            pref.bpm,
+            pref.speechiness,
+            pref.energy,
+            pref.updatedAt,
+            pref.createdAt
           )
       ),
       entity.updatedAt,

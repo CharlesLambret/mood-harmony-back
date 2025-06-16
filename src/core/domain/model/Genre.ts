@@ -10,7 +10,6 @@ export class Genre extends DomainModel {
     id: number,
     name: string,
     iconUrl: string,
-   
     updatedAt?: Date,
     createdAt?: Date,
   ) {

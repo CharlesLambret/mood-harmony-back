@@ -1,11 +1,11 @@
 import { GenerateSessionMapper } from '../create-session.mapper';
 import { GenerateSessionRequest } from '../../request/create-session.request';
 import { ProfileRequest } from '../../request/profile.request';
-import { Session } from 'src/core/domain/model/Session';
-import { Emotion } from 'src/core/domain/model/Emotion';
-import { SessionPhase } from 'src/core/domain/model/SessionPhase';
-import { Track } from 'src/core/domain/model/Track';
-import { Genre } from 'src/core/domain/model/Genre';
+import { Session } from '../../../../core/domain/model/Session';
+import { Emotion } from '../../../../core/domain/model/Emotion';
+import { SessionPhase } from '../../../../core/domain/model/SessionPhase';
+import { Track } from '../../../../core/domain/model/Track';
+import { Genre } from '../../../../core/domain/model/Genre';
 import { userWithEmotionProfileMock } from './mocks/userEmotionalProfile';
 describe('GenerateSessionMapper', () => {
   describe('toDomain', () => {

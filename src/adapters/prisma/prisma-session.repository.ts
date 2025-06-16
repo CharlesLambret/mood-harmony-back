@@ -1,8 +1,8 @@
 import { PrismaService } from './prisma.service';
 import { Injectable } from '@nestjs/common';
-import { SessionRepository } from 'src/core/domain/repository/session.repository';
+import { SessionRepository } from '../../core/domain/repository/session.repository';
 import { PrismaSessionMapper } from './mapper/prisma-session.mapper';
-import { Session } from 'src/core/domain/model/Session';
+import { Session } from '../../core/domain/model/Session';
 
 @Injectable()
 export class PrismaSessionRepository implements SessionRepository {
@@ -22,7 +22,9 @@ export class PrismaSessionRepository implements SessionRepository {
       toEmotionId: session.toEmotion.id,
       phases: {
         create: session.phases?.map((phase, idx) => ({
-          order_index: phase.phaseNumber ?? idx + 1, // phaseNumber correspond à l'ordre dans ton modèle
+          sessionId: session.id,
+          phaseNumber: phase.phaseNumber ?? idx + 1, // phaseNumber correspond à l'ordre dans ton modèle
+          duration: phase.duration, // Ajout du champ duration requis par Prisma
           fromBpm: phase.fromBpm,
           toBpm: phase.toBpm,
           fromSpeechiness: phase.fromSpeechiness,
@@ -41,20 +43,37 @@ export class PrismaSessionRepository implements SessionRepository {
     const createdEntity = await this.prisma.session.create({
       data,
       include: {
-        fromEmotion: true,
-        toEmotion: true,
-        phases: {
+      fromEmotion: true,
+      toEmotion: true,
+      phases: {
+        include: {
+        tracks: {
           include: {
-            tracks: {
-              include: {
-                track: true
-              }
-            }
-          },
-          orderBy: {
-            order_index: 'asc'
+          track: true
           }
         }
+        },
+        select: {
+        id: true,
+        sessionId: true,
+        phaseNumber: true,
+        duration: true,
+        fromBpm: true,
+        toBpm: true,
+        fromSpeechiness: true,
+        toSpeechiness: true,
+        fromEnergy: true,
+        toEnergy: true,
+        tracks: {
+          include: {
+          track: true
+          }
+        }
+        },
+        orderBy: {
+        phaseNumber: 'asc'
+        }
+      }
       }
     });
 
@@ -76,7 +95,7 @@ export class PrismaSessionRepository implements SessionRepository {
             }
           },
           orderBy: {
-            order_index: 'asc'
+            phaseNumber: 'asc'
           }
         }
       }
@@ -118,7 +137,7 @@ export class PrismaSessionRepository implements SessionRepository {
             }
           },
           orderBy: {
-            order_index: 'asc'
+            phaseNumber: 'asc'
           }
         }
       },
@@ -142,7 +161,7 @@ export class PrismaSessionRepository implements SessionRepository {
             }
           },
           orderBy: {
-            order_index: 'asc'
+            phaseNumber: 'asc'
           }
         }
       },
@@ -171,7 +190,7 @@ export class PrismaSessionRepository implements SessionRepository {
               }
             },
             orderBy: {
-              order_index: 'asc'
+              phaseNumber: 'asc'
             }
           }
         }

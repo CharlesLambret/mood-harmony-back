@@ -13,9 +13,8 @@ export class InMemoryUserGenrePreferenceRepository extends UserGenrePreferenceRe
     // Assume data.userEmotion and data.genre are provided in data
     const preference = new UserGenrePreference(
       id,
-      data.userEmotion?.userEmotionalProfile!,
-      data.userEmotion!,
-      data.genre!,
+      data.useremotionId!,
+      data.genreId!,
       data.rating!,
       data.bpm!,
       data.speechiness!,
@@ -40,9 +39,8 @@ export class InMemoryUserGenrePreferenceRepository extends UserGenrePreferenceRe
     if (!existing) return null;
     const updated = new UserGenrePreference(
       id,
-      data.userEmotion?.userEmotionalProfile ?? existing.userEmotion.userEmotionalProfile,
-      data.userEmotion ?? existing.userEmotion,
-      data.genre ?? existing.genre,
+      data.useremotionId!,
+      data.genreId!,
       data.rating ?? existing.rating,
       data.bpm ?? existing.bpm,
       data.speechiness ?? existing.speechiness,
@@ -64,13 +62,13 @@ export class InMemoryUserGenrePreferenceRepository extends UserGenrePreferenceRe
 
   async findByUserEmotionIds(userEmotionIds: number[]): Promise<UserGenrePreference[]> {
     return Array.from(this.preferences.values()).filter(pref =>
-      userEmotionIds.includes(pref.userEmotion.id)
+      userEmotionIds.includes(pref.useremotionId)
     );
   }
 
   async findBestRatingByEmotion(userEmotionId: number): Promise<UserGenrePreference | null> {
     const prefs = Array.from(this.preferences.values()).filter(
-      pref => pref.userEmotion.id === userEmotionId
+      pref => pref.useremotionId === userEmotionId
     );
     if (prefs.length === 0) return null;
     return prefs.reduce((best, curr) => (curr.rating > best.rating ? curr : best), prefs[0]);
@@ -78,12 +76,12 @@ export class InMemoryUserGenrePreferenceRepository extends UserGenrePreferenceRe
 
   async findCommonGenres(userEmotionIds: number[], limit: number): Promise<UserGenrePreference[]> {
     const prefs = Array.from(this.preferences.values()).filter(pref =>
-      userEmotionIds.includes(pref.userEmotion.id)
+      userEmotionIds.includes(pref.useremotionId)
     );
     // Group by genre id and count occurrences
     const genreCount = new Map<number, { pref: UserGenrePreference; count: number }>();
     for (const pref of prefs) {
-      const genreId = pref.genre.id;
+      const genreId = pref.genreId;
       if (!genreCount.has(genreId)) {
         genreCount.set(genreId, { pref, count: 1 });
       } else {

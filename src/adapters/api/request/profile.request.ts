@@ -1,4 +1,4 @@
-import { UserEmotionalProfile } from "src/core/domain/model/UserEmotionalProfile";
+import { UserEmotionalProfile } from "../../../core/domain/model/UserEmotionalProfile";
 
 export type ProfileRequest = {
   id: number;

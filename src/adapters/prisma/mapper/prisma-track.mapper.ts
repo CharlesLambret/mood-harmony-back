@@ -14,7 +14,7 @@ type TrackEntity = {
   genre: {
     id: number;
     name: string;
-    icon_url: string;
+    iconUrl: string;
     updatedAt?: Date;
     createdAt?: Date;
   };
@@ -36,7 +36,7 @@ export class PrismaTrackMapper implements EntityMapper<Track, TrackEntity> {
       genre: {
         id: model.genre.id,
         name: model.genre.name,
-        icon_url: model.genre.iconUrl,
+        iconUrl: model.genre.iconUrl,
         updatedAt: model.genre.updatedAt,
         createdAt: model.genre.createdAt,
       },
@@ -57,7 +57,7 @@ export class PrismaTrackMapper implements EntityMapper<Track, TrackEntity> {
       new Genre(
         entity.genre.id,
         entity.genre.name,
-        entity.genre.icon_url,
+        entity.genre.iconUrl,
         entity.genre.updatedAt,
         entity.genre.createdAt
       ),

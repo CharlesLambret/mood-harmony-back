@@ -10,7 +10,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { GenerateSessionResponse } from '../response/create-session.response';
-import { GenerateSessionUseCase } from 'src/core/usecases/create-session.use-case';
+import { GenerateSessionUseCase } from '../../../core/usecases/create-session.use-case';
 import { GenerateSessionRequest } from '../request/create-session.request';
 import { GenerateSessionMapper } from '../mapper/create-session.mapper';
 

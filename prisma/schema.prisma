@@ -33,23 +33,25 @@ model UserEmotion {
   id                      Int                   @id @default(autoincrement())
   userEmotionProfile      UserEmotionProfile    @relation(fields: [userEmotionProfileId], references: [id])
   userEmotionProfileId    Int
+  userId                  Int
   emotion                 Emotion               @relation(fields: [emotionId], references: [id])
   emotionId               Int
-  customGenreRatings      UserGenrePreference[]
+  userGenrePreferences      UserGenrePreference[]
 
   @@map("UserEmotion")
 }
 
 model UserGenrePreference {
   id             Int        @id @default(autoincrement())
-  genre          Genre      @relation(fields: [genreId], references: [id])
   genreId        Int
-  userEmotion    UserEmotion @relation(fields: [userEmotionId], references: [id])
   userEmotionId  Int
   rating         Int
   bpm            Int
   speechiness    Int
   energy         Int
+
+  userEmotion    UserEmotion @relation(fields: [userEmotionId], references: [id])
+  genre          Genre       @relation(fields: [genreId], references: [id])
 
   @@map("UserGenrePreference")
 }
@@ -57,7 +59,7 @@ model UserGenrePreference {
 model Genre {
   id        Int                    @id @default(autoincrement())
   name      String
-  icon_url  String
+  iconUrl  String
   tracks    Track[]
   ratings   UserGenrePreference[]
 
@@ -67,7 +69,7 @@ model Genre {
 model Emotion {
   id           Int        @id @default(autoincrement())
   name         String
-  icon_url     String
+  iconUrl     String
   userEmotions UserEmotion[]
   fromSessions Session[] @relation("FromEmotion")
   toSessions   Session[] @relation("ToEmotion")

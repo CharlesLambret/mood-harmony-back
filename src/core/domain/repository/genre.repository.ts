@@ -1,4 +1,4 @@
 import { Repository } from '../../base/repository';
-import { SessionPhase } from '../model/SessionPhase';
+import { Genre } from '../model/Genre';
 
-export abstract class SessionPhaseRepository extends Repository<SessionPhase> {}
+export abstract class GenreRepository extends Repository<Genre> {}

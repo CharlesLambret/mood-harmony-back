@@ -4,8 +4,8 @@ import { Genre } from './Genre';
 import { UserEmotionalProfile } from './UserEmotionalProfile';
 
 export class UserGenrePreference extends DomainModel {
-  userEmotion: UserEmotion;
-  genre: Genre;
+  useremotionId: number;
+  genreId: number;
   rating: number;
   bpm: number;
   speechiness: number;
@@ -15,9 +15,9 @@ export class UserGenrePreference extends DomainModel {
 
   constructor(
     id: number,
-    userEmotionalProfile: UserEmotionalProfile,
-    userEmotion: UserEmotion,
-    genre: Genre,
+    
+    useremotionId: number,
+    genreId: number,
     rating: number,
     bpm: number,
     speechiness: number,
@@ -26,8 +26,8 @@ export class UserGenrePreference extends DomainModel {
     createdAt?: Date,
   ) {
     super(id);
-    this.userEmotion = userEmotion;
-    this.genre = genre;
+    this.useremotionId = useremotionId;
+    this.genreId = genreId;
     this.rating = rating;
     this.bpm = bpm;
     this.speechiness = speechiness;

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { userEmotionRepository } from 'src/core/domain/repository/userEmotion.repository';
+import { userEmotionRepository } from '../../core/domain/repository/user-emotion.repository';
 import { UserEmotion } from '../../core/domain/model/UserEmotion';
 
 @Injectable()
@@ -11,11 +11,12 @@ export class InMemoryUserEmotionRepository extends userEmotionRepository {
     const id = data.id ?? this.autoIncrement++;
     const userEmotion = new UserEmotion(
       id,
-      data.userEmotionalProfile!,
       data.emotion!,
-      data.genres ?? [],
-      data.updatedAt,
-      data.createdAt
+      data.userId!,
+      data.userEmotionProfileId!,
+      data.userGenrePreferences ?? [],
+      data.updatedAt ?? new Date(),
+      data.createdAt ?? new Date()
     );
     this.userEmotions.set(id, userEmotion);
     return userEmotion;
@@ -34,9 +35,10 @@ export class InMemoryUserEmotionRepository extends userEmotionRepository {
     if (!existing) return null;
     const updated = new UserEmotion(
       id,
-      data.userEmotionalProfile ?? existing.userEmotionalProfile,
       data.emotion ?? existing.emotion,
-      data.genres ?? existing.genres,
+      data.userId ?? existing.userId,
+      data.userEmotionProfileId ?? existing.userEmotionProfileId,
+      data.userGenrePreferences ?? existing.userGenrePreferences,
       data.updatedAt ?? new Date(),
       data.createdAt ?? existing.createdAt
     );
@@ -55,8 +57,16 @@ export class InMemoryUserEmotionRepository extends userEmotionRepository {
   async findByUserIdAndEmotionIds(userId: number, emotionIds: number[]): Promise<UserEmotion[]> {
     return Array.from(this.userEmotions.values()).filter(
       ue =>
-        ue.userEmotionalProfile &&
-        ue.userEmotionalProfile.id === userId &&
+        ue.userId === userId &&
+        ue.emotion &&
+        emotionIds.includes(ue.emotion.id)
+    );
+  }
+
+  async findByUserEmotionProfileIdAndEmotionIds(userEmotionProfileId: number, emotionIds: number[]): Promise<UserEmotion[]> {
+    return Array.from(this.userEmotions.values()).filter(
+      ue =>
+        ue.userEmotionProfileId === userEmotionProfileId &&
         ue.emotion &&
         emotionIds.includes(ue.emotion.id)
     );

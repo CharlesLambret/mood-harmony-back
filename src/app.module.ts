@@ -4,12 +4,12 @@ import { SessionRepository } from './core/domain/repository/session.repository';
 import { EmotionRepository } from './core/domain/repository/emotion.repository';
 import { UserGenrePreferenceRepository } from './core/domain/repository/userGenrePreferences.repository';
 import { TrackRepository } from './core/domain/repository/track.repository';
-import { userEmotionRepository } from './core/domain/repository/userEmotion.repository';
+import { userEmotionRepository } from './core/domain/repository/user-emotion.repository';
 import { PrismaSessionRepository } from './adapters/prisma/prisma-session.repository';
-import { PrismaEmotionRepository
-import { PrismaUserGenrePreferenceRepository } from './adapters/prisma/prisma-userGenrePreference.repository';
+import { PrismaEmotionRepository } from './adapters/prisma/prisma-emotion.repository';
+import { PrismauserGenrePreferencesRepository } from './adapters/prisma/prisma-user-genre-preferences.repository';
 import { PrismaTrackRepository } from './adapters/prisma/prisma-track.repository';
-import { PrismaUserEmotionRepository } from './adapters/prisma/prisma-userEmotion.repository';
+import { PrismaUserEmotionRepository } from './adapters/prisma/prisma-user-emotion.repository';
 import { PrismaService } from './adapters/prisma/prisma.service';
 import { Module } from '@nestjs/common';
 
@@ -31,7 +31,7 @@ import { Module } from '@nestjs/common';
     },
     {
       provide: UserGenrePreferenceRepository,
-      useFactory: (prisma: PrismaService) => new PrismaUserGenrePreferenceRepository(prisma),
+      useFactory: (prisma: PrismaService) => new PrismauserGenrePreferencesRepository(prisma),
       inject: [PrismaService],
     },
     {

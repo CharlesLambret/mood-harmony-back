@@ -2,7 +2,6 @@ import { Track } from "./Track";
 import { DomainModel } from '../../base/domain-model';
 
 export class SessionPhase extends DomainModel {
-  sessionId: number;
   phaseNumber: number;
   duration: number;
   fromBpm : number
@@ -12,11 +11,11 @@ export class SessionPhase extends DomainModel {
   fromEnergy: number;
   toEnergy: number;
   tracks: Track[];
+  sessionId?: number;
 
   constructor(
     id: number,
 
-    sessionId: number,
     phaseNumber: number,
     duration: number,
     fromBpm : number,
@@ -25,13 +24,13 @@ export class SessionPhase extends DomainModel {
     toSpeechiness: number,
     fromEnergy: number,
     toEnergy: number,
-    tracks: Track[] = []
+    tracks: Track[] = [],
+    sessionId?: number,
+
   ) {
     super(id);
 
-    if (!sessionId) {
-      throw new Error('Session ID is required');
-    }
+
 
     if (phaseNumber < 1) {
       throw new Error('Phase number must be greater than 0');
