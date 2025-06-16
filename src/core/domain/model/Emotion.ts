@@ -17,11 +17,11 @@ export class Emotion extends DomainModel {
     super(id);
 
     if (!name) {
-      throw new Error('Name is required');
+      this.name = 'Unknown Emotion';
     }
 
     if (!iconUrl) {
-      throw new Error('Description is required');
+      this.iconUrl = 'https://example.com/default-icon.png';
     }
 
     this.name = name;

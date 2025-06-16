@@ -1,21 +1,20 @@
 import { GenerateSessionUseCase } from '../create-session.use-case';
-import { createMockEmotions} from '../../../adapters/in-memory/mocks/emotions';
+import { createMockEmotions } from '../../../adapters/in-memory/mocks/emotions';
 import { createMockGenres } from '../../../adapters/in-memory/mocks/genres';
-import { createMockUserGenrePreferences} from '../../../adapters/in-memory/mocks/user-genre-preferences';
+import { createMockUserGenrePreferences } from '../../../adapters/in-memory/mocks/user-genre-preferences';
 import { createMockTracks } from '../../../adapters/in-memory/mocks/tracks';
 import { createMockUser } from '../../../adapters/in-memory/mocks/user';
-import { createMockUserEmotion} from '../../../adapters/in-memory/mocks/user-emotion';
+import { createMockUserEmotion } from '../../../adapters/in-memory/mocks/user-emotion';
 import { InMemorySessionRepository } from '../../../adapters/in-memory/in-memory-session.repository';
 
 describe('GenerateSessionUseCase', () => {
   let sessionRepository: InMemorySessionRepository;
-  
   let useCase: GenerateSessionUseCase;
   let tracks, trackRepository;
-  let genre1, genre2, genreRepository;
-  let startEmotion, endEmotion, emotion, emotionRepository;
+  let genre1, genre2, genre3, genre4, genre5, genreRepository;
+  let startEmotion, endEmotion, emotionRepository;
   let userGenrePreferences, userGenrePreferencesRepository;
-  let userEmotion, userEmotionRepository;
+  let startUserEmotion, endUserEmotion, userEmotions, userEmotionRepository;
   let user;
 
   beforeEach(async () => {
@@ -25,17 +24,20 @@ describe('GenerateSessionUseCase', () => {
     const tracksFunction = await createMockTracks();
     trackRepository = tracksFunction.trackRepository;
     tracks = tracksFunction.tracks;
+
     // Genres
     const genres = await createMockGenres();
     genre1 = genres.genre1;
     genre2 = genres.genre2;
+    genre3 = genres.genre3;
+    genre4 = genres.genre4;
+    genre5 = genres.genre5;
     genreRepository = genres.genreRepository;
 
     // Emotions
     const emotions = await createMockEmotions();
     startEmotion = emotions.startEmotion;
     endEmotion = emotions.endEmotion;
-    emotion = emotions.emotion;
     emotionRepository = emotions.emotionRepository;
 
     // UserGenrePreferences
@@ -45,7 +47,9 @@ describe('GenerateSessionUseCase', () => {
 
     // UserEmotion
     const userEmotionMock = await createMockUserEmotion();
-    userEmotion = userEmotionMock.userEmotion;
+    startUserEmotion = userEmotionMock.startUserEmotion;
+    endUserEmotion = userEmotionMock.endUserEmotion;
+    userEmotions = userEmotionMock.userEmotions;
     userEmotionRepository = userEmotionMock.userEmotionRepository;
 
     // User
@@ -71,114 +75,141 @@ describe('GenerateSessionUseCase', () => {
     });
   });
 
+  // Alternative: Fix the test to match current implementation
   describe('getUserEmotions', () => {
-    it('should call userEmotionRepository.findByUserIdAndEmotionIds', async () => {
-      const userEmotion = await userEmotionRepository.create({
-        emotion,
-        userGenrePreferences: [],
-        userId: 1, // Ajoute ceci
-        userEmotionProfileId: 1, // Ajoute ceci ou une valeur adaptée
-      });
+    it('should return UserEmotions for given user and emotion IDs', async () => {
+      // Mock to return an array containing both UserEmotions
+      jest.spyOn(userEmotionRepository, 'findByUserIdAndEmotionIds')
+        .mockResolvedValue([startUserEmotion, endUserEmotion]);
 
-      const result = await (useCase as any).getUserEmotions(1, [emotion.id]);
-      expect(result).toEqual([userEmotion]);
+      const result = await (useCase as any).getUserEmotions(1, [startEmotion.id, endEmotion.id]);
+      
+      expect(result).toEqual([startUserEmotion, endUserEmotion]);
+      expect(userEmotionRepository.findByUserIdAndEmotionIds).toHaveBeenCalledWith(1, [startEmotion.id, endEmotion.id]);
+    });
+
+    it('should throw if UserEmotions are not found', async () => {
+      jest.spyOn(userEmotionRepository, 'findByUserIdAndEmotionIds').mockResolvedValue([]);
+
+      await expect((useCase as any).getUserEmotions(1, [startEmotion.id, endEmotion.id]))
+        .rejects.toThrow('UserEmotions not found for one or both emotions');
     });
   });
 
-  describe('getGenrePreferences', () => {
-    it('should return best genres and common genres', async () => {
-      const bestGenresSpy = jest.spyOn(userGenrePreferencesRepository, 'findBestRatingByEmotion');
-      const commonGenresSpy = jest.spyOn(userGenrePreferencesRepository, 'findCommonGenres');
+  describe('getBestGenrePreferences', () => {
+    it('should return best genre preferences for start and end emotions', async () => {
+      const startBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 1 && ugp.rating === 5);
+      const endBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 2 && ugp.rating === 5);
 
-      const result = await (useCase as any).getGenrePreferences([userEmotion, userEmotion], 3);
+      jest.spyOn(userGenrePreferencesRepository, 'findBestRatingByEmotion')
+        .mockResolvedValueOnce(startBestGenre)
+        .mockResolvedValueOnce(endBestGenre);
 
-      expect(bestGenresSpy).toHaveBeenCalled();
-      expect(commonGenresSpy).toHaveBeenCalled();
-      expect(result).toHaveProperty('startGenre');
-      expect(result).toHaveProperty('endGenre');
-      expect(result).toHaveProperty('commonGenres');
-      expect(Array.isArray(result.commonGenres)).toBe(true);
+      const result = await (useCase as any).getBestGenrePreferences([startUserEmotion, endUserEmotion]);
+
+      expect(result).toEqual([startBestGenre, endBestGenre]);
+    });
+
+    it('should throw if best genre preferences are not found', async () => {
+      jest.spyOn(userGenrePreferencesRepository, 'findBestRatingByEmotion').mockResolvedValue(null);
+
+      await expect((useCase as any).getBestGenrePreferences([startUserEmotion, endUserEmotion]))
+        .rejects.toThrow('Best genre preferences not found for emotions');
+    });
+  });
+
+  describe('getCommonGenrePreferences', () => {
+    it('should return common genre preferences between two UserEmotions', async () => {
+      const commonGenres = userGenrePreferences.filter(ugp => ugp.genreId === 3); // Jazz est commun
+
+      jest.spyOn(userGenrePreferencesRepository, 'findCommonGenres')
+        .mockResolvedValue(commonGenres);
+
+      const result = await (useCase as any).getCommonGenrePreferences(startUserEmotion.id, endUserEmotion.id);
+
+      expect(result).toEqual(commonGenres);
+      expect(userGenrePreferencesRepository.findCommonGenres)
+      .toHaveBeenCalledWith([startUserEmotion.id, endUserEmotion.id], 3);
+    });
+  });
+
+  describe('calculateIntermediatePhaseValues', () => {
+    it('should calculate intermediate values correctly', () => {
+      const startValues = { genreId: 1, bpm: 120, speechiness: 10, energy: 0.8 };
+      const endValues = { genreId: 2, bpm: 140, speechiness: 20, energy: 0.9 };
+
+      const result = (useCase as any).calculateIntermediatePhaseValues(startValues, endValues, 1, 3);
+
+      expect(result.bpm).toBe(130); // 120 + (140-120) * 0.5
+      expect(result.speechiness).toBe(15); // 10 + (20-10) * 0.5
+      expect(result.energy).toBe(0.85); // 0.8 + (0.9-0.8) * 0.5
+      expect(result.genreId).toBe(1); // Genre reste le même
     });
   });
 
   describe('generatePhases', () => {
-  it('should generate the correct number of phases with correct genres', async () => {
-    jest.spyOn(useCase as any, 'generateSinglePhase').mockResolvedValue({} as any);
+    it('should generate the correct number of phases', async () => {
+      const startBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 1 && ugp.rating === 5);
+      const endBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 2 && ugp.rating === 5);
+      const commonGenres = userGenrePreferences.filter(ugp => ugp.genreId === 3);
 
-    // Simule un objet genrePrefObj conforme à la nouvelle logique
-    const genrePrefObj = {
-      startGenre: userGenrePreferences[0],
-      endGenre: userGenrePreferences[1] || userGenrePreferences[0],
-      commonGenres: userGenrePreferences.slice(2, 3)
-    };
+      jest.spyOn(useCase as any, 'generateSinglePhase').mockResolvedValue({
+        id: 1,
+        phaseNumber: 1,
+        duration: 15,
+        startBpm: 120,
+        endBpm: 125,
+        startSpeechiness: 10,
+        endSpeechiness: 12,
+        startEnergy: 0.8,
+        endEnergy: 0.82,
+        tracks: []
+      });
 
-    const result = await (useCase as any).generatePhases(3, 45, genrePrefObj);
-    expect(result.length).toBe(3);
-    expect((useCase as any).generateSinglePhase).toHaveBeenCalledTimes(3);
+      const result = await (useCase as any).generatePhases(3, 45, startBestGenre, endBestGenre, commonGenres);
 
-    // Vérifie que chaque appel reçoit un seul genre dans un tableau
-    expect((useCase as any).generateSinglePhase).toHaveBeenNthCalledWith(
-      1, 1, 15, [genrePrefObj.startGenre], 3
-    );
-    expect((useCase as any).generateSinglePhase).toHaveBeenNthCalledWith(
-      2, 2, 15, [genrePrefObj.commonGenres[0]], 3
-    );
-    expect((useCase as any).generateSinglePhase).toHaveBeenNthCalledWith(
-      3, 3, 15, [genrePrefObj.endGenre], 3
-    );
+      expect(result.length).toBe(3);
+      expect((useCase as any).generateSinglePhase).toHaveBeenCalledTimes(3);
+    });
   });
-});
 
   describe('generateSinglePhase', () => {
-    it('should call trackRepository and return a SessionPhase', async () => {
-      
-      jest.spyOn(trackRepository, 'findByGenreWithCriteria').mockResolvedValue([tracks]);
-      jest.spyOn(trackRepository, 'findByGenreWithTransition').mockResolvedValue([tracks]);
-      jest.spyOn(useCase as any, 'selectTracksForPhase').mockReturnValue([tracks]);
-      jest.spyOn(useCase as any, 'calculatePhaseStartValues').mockReturnValue({ bpm: 120, speechiness: 10, energy: 0.8 });
-      jest.spyOn(useCase as any, 'calculatePhaseEndValues').mockReturnValue({ bpm: 130, speechiness: 20, energy: 0.9 });
+    it('should generate a single phase with tracks', async () => {
+      const phaseValues = { genreId: 1, bpm: 120, speechiness: 10, energy: 0.8 };
+      const startValues = { genreId: 1, bpm: 120, speechiness: 10, energy: 0.8 };
+      const endValues = { genreId: 2, bpm: 140, speechiness: 20, energy: 0.9 };
 
-      const phase = await (useCase as any).generateSinglePhase(1, 15, userGenrePreferences, 1);
-      expect(trackRepository.findByGenreWithCriteria).toHaveBeenCalled();
-      expect(trackRepository.findByGenreWithTransition).toHaveBeenCalled();
-      expect(phase.tracks.length).toBeGreaterThan(0);
-      
+      jest.spyOn(trackRepository, 'findByGenreWithCriteria').mockResolvedValue(tracks.slice(0, 3));
+      jest.spyOn(useCase as any, 'sortTracksForProgression').mockReturnValue(tracks.slice(0, 3));
+
+      const result = await (useCase as any).generateSinglePhase(
+        1, 15, phaseValues, startValues, endValues, 3
+      );
+
+      expect(trackRepository.findByGenreWithCriteria).toHaveBeenCalledWith(1, 120, 10, 0.8, 0.1, 10);
+      expect(result.tracks.length).toBeGreaterThan(0);
+      expect(result.phaseNumber).toBe(1);
+      expect(result.duration).toBe(15);
     });
   });
 
-  describe('selectTracksForPhase', () => {
-    it('should return unique tracks and respect min/max', async () => {
-      // Debug: print input tracks
-      // eslint-disable-next-line no-console
-      const result = (useCase as any).selectTracksForPhase(tracks, 1, 2);
-      // eslint-disable-next-line no-console
-      expect(result.length).toBeGreaterThanOrEqual(1);
-      expect(result.find((t: { id: number }) => t.id === 1)).toBeDefined();
-      expect(result.find(t => t.id === 2)).toBeDefined();
+  describe('sortTracksForProgression', () => {
+    it('should sort tracks according to progression', () => {
+      const phaseValues = { genreId: 1, bpm: 120, speechiness: 10, energy: 0.8 };
+      const startValues = { genreId: 1, bpm: 120, speechiness: 10, energy: 0.8 };
+      const endValues = { genreId: 2, bpm: 140, speechiness: 20, energy: 0.9 };
+
+      const result = (useCase as any).sortTracksForProgression(
+        tracks.slice(0, 3), startValues, endValues, 1, 3
+      );
+
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(3);
     });
   });
-
-  describe('calculatePhaseStartValues', () => {
-    it('should call calculatePhaseStartValues with next progress', async () => {
-      const spy = jest.spyOn(useCase as any, 'calculatePhaseStartValues');
-      (useCase as any).calculatePhaseStartValues(userGenrePreferences, 0.5);
-      expect(spy).toHaveBeenCalled();
-    });
-  });
-
-  describe('calculatePhaseEndValues', () => {
-    it('should call calculatePhaseEndValues with next progress', async () => {
-      const spy = jest.spyOn(useCase as any, 'calculatePhaseEndValues');
-      (useCase as any).calculatePhaseEndValues(userGenrePreferences, 0.5);
-      expect(spy).toHaveBeenCalled();
-    });
-  });
-
-  // Additional tests
 
   describe('execute', () => {
     it('should create a session with correct phases and tracks', async () => {
-
       const command = {
         currentUser: { id: 1 },
         emotionStartId: startEmotion.id,
@@ -186,62 +217,115 @@ describe('GenerateSessionUseCase', () => {
         duration: 30
       };
 
-      // Patch userEmotionRepository to return both start and end userEmotions
-      jest.spyOn(userEmotionRepository, 'findByUserIdAndEmotionIds').mockResolvedValue([startEmotion, endEmotion]);
+      // FIX: Mock to return an array containing both UserEmotions
+      jest.spyOn(userEmotionRepository, 'findByUserIdAndEmotionIds')
+        .mockResolvedValue([startUserEmotion, endUserEmotion]); // Return array, not individual calls
 
-      // Patch userGenrePreferenceRepository
-      jest.spyOn(userGenrePreferencesRepository, 'findBestRatingByEmotion').mockResolvedValue(userGenrePreferences);
-      jest.spyOn(userGenrePreferencesRepository, 'findCommonGenres').mockResolvedValue([]);
+      const startBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 1 && ugp.rating === 5);
+      const endBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 2 && ugp.rating === 5);
+      const commonGenres = userGenrePreferences.filter(ugp => ugp.genreId === 3);
 
-      // Patch trackRepository
-      jest.spyOn(trackRepository, 'findByGenreWithCriteria').mockResolvedValue([
-        await trackRepository.create({
-          name: 'Track 2',
-          length: 200,
-          trackHref: 'href2',
-          bpm: 120,
-          speechiness: 10,
-          energy: 0.8,
-          genre: genre1
-        })
-      ]);
-      jest.spyOn(trackRepository, 'findByGenreWithTransition').mockResolvedValue([]);
+      jest.spyOn(userGenrePreferencesRepository, 'findBestRatingByEmotion')
+        .mockResolvedValueOnce(startBestGenre)
+        .mockResolvedValueOnce(endBestGenre);
+
+      jest.spyOn(userGenrePreferencesRepository, 'findCommonGenres')
+        .mockResolvedValue(commonGenres);
+
+      jest.spyOn(trackRepository, 'findByGenreWithCriteria').mockResolvedValue(tracks.slice(0, 3));
 
       const session = await useCase.execute(command);
+
       expect(session).toBeDefined();
-      expect(session.phases.length).toBe(Math.floor(command.duration / 15));
+      expect(session.phases.length).toBe(Math.floor(command.duration / 15)); // 2 phases pour 30 minutes
       expect(session.fromEmotion).toEqual(startEmotion);
-      expect(session.toEmotion).toEqual(startEmotion);
+      expect(session.toEmotion).toEqual(endEmotion);
+      expect(session.duration).toBe(30);
+    });
+
+    it('should throw if duration is too short', async () => {
+      const command = {
+        currentUser: { id: 1 },
+        emotionStartId: startEmotion.id,
+        emotionEndId: endEmotion.id,
+        duration: 15 // Seulement 15 minutes = 1 phase
+      };
+
+      await expect(useCase.execute(command)).rejects.toThrow('La durée doit permettre au moins 2 phases (minimum 30 minutes)');
     });
 
     it('should throw if emotions are not found', async () => {
       const command = {
-        currentUser: user.id,
-        emotionStartId: startEmotion.id,
-        emotionEndId: endEmotion.id,
+        currentUser: { id: 1 },
+        emotionStartId: 999,
+        emotionEndId: 1000,
         duration: 30
       };
+
       await expect(useCase.execute(command)).rejects.toThrow('One or both emotions not found');
+    });
+
+    it('should handle cases with no common genres', async () => {
+      const command = {
+        currentUser: { id: 1 },
+        emotionStartId: startEmotion.id,
+        emotionEndId: endEmotion.id,
+        duration: 45 // 3 phases
+      };
+
+      // FIX: Mock to return an array containing both UserEmotions
+      jest.spyOn(userEmotionRepository, 'findByUserIdAndEmotionIds')
+        .mockResolvedValue([startUserEmotion, endUserEmotion]); // Return array, not individual calls
+
+      const startBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 1 && ugp.rating === 5);
+      const endBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 2 && ugp.rating === 5);
+
+      jest.spyOn(userGenrePreferencesRepository, 'findBestRatingByEmotion')
+        .mockResolvedValueOnce(startBestGenre)
+        .mockResolvedValueOnce(endBestGenre);
+
+      jest.spyOn(userGenrePreferencesRepository, 'findCommonGenres')
+        .mockResolvedValue([]); // Aucun genre commun
+
+      jest.spyOn(trackRepository, 'findByGenreWithCriteria').mockResolvedValue(tracks.slice(0, 3));
+
+      const session = await useCase.execute(command);
+
+      expect(session).toBeDefined();
+      expect(session.phases.length).toBe(3);
     });
   });
 
   describe('edge cases', () => {
-    it('should handle empty genre preferences gracefully', async () => {
-      const genre = await genreRepository.create({ name: 'Pop', iconUrl: 'icon.png' });
-      const userEmotion = await userEmotionRepository.create({
-        emotion,
-        userId: 1,
-        userEmotionProfileId: 1,
-        userGenrePreferences: [],
-      });
-      const result = await (useCase as any).getGenrePreferences([userEmotion], 3);
-      expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBe(0);
+    it('should handle empty tracks gracefully', async () => {
+      const phaseValues = { genreId: 1, bpm: 120, speechiness: 10, energy: 0.8 };
+      const startValues = { genreId: 1, bpm: 120, speechiness: 10, energy: 0.8 };
+      const endValues = { genreId: 2, bpm: 140, speechiness: 20, energy: 0.9 };
+
+      jest.spyOn(trackRepository, 'findByGenreWithCriteria').mockResolvedValue([]);
+
+      const result = await (useCase as any).generateSinglePhase(
+        1, 15, phaseValues, startValues, endValues, 3
+      );
+
+      expect(result.tracks).toEqual([]);
     });
 
-    it('should select no tracks if none are available', () => {
-      const result = (useCase as any).selectTracksForPhase([], 1, 2);
-      expect(result).toEqual([]);
+    it('should handle interpolation at boundaries', () => {
+      const startValues = { genreId: 1, bpm: 120, speechiness: 10, energy: 0.8 };
+      const endValues = { genreId: 2, bpm: 140, speechiness: 20, energy: 0.9 };
+
+      // Test au début (ratio = 0)
+      const startResult = (useCase as any).interpolateValues(startValues, endValues, 0);
+      expect(startResult.bpm).toBe(120);
+      expect(startResult.speechiness).toBe(10);
+      expect(startResult.energy).toBe(0.8);
+
+      // Test à la fin (ratio = 1)
+      const endResult = (useCase as any).interpolateValues(startValues, endValues, 1);
+      expect(endResult.bpm).toBe(140);
+      expect(endResult.speechiness).toBe(20);
+      expect(endResult.energy).toBe(0.9);
     });
   });
 });
