@@ -90,7 +90,7 @@ export class GenerateSessionUseCase implements UseCase<GenerateSessionCommand, S
     const ratio = phaseIndex / (totalPhases - 1);
 
     return {
-      genreId: startValues.genreId, // Le genre reste le même pour les phases intermédiaires
+      genreId: startValues.genreId, 
       bpm: Math.round(startValues.bpm + (endValues.bpm - startValues.bpm) * ratio),
       speechiness: Math.round(startValues.speechiness + (endValues.speechiness - startValues.speechiness) * ratio),
       energy: Math.round((startValues.energy + (endValues.energy - startValues.energy) * ratio) * 100) / 100
