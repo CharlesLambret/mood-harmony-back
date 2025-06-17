@@ -72,9 +72,9 @@ export class InMemoryTrackRepository extends TrackRepository {
       .filter(
         t =>
           t.genre.id === genreId &&
-          Math.abs(t.bpm - bpm) <= tolerance &&
-          Math.abs(t.speechiness - speechiness) <= tolerance &&
-          Math.abs(t.energy - energy) <= tolerance
+          Math.abs(Number(t.bpm) - Number(bpm)) <= Number(tolerance) &&
+          Math.abs(Number(t.speechiness) - Number(speechiness)) <= Number(tolerance) &&
+          Math.abs(Number(t.energy) - Number(energy)) <= Number(tolerance)
       )
       .slice(0, limit);
   }

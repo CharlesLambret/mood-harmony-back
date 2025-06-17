@@ -38,7 +38,7 @@ export class PrismaUserGenrePreferenceMapper implements EntityMapper<UserGenrePr
     };
   }
 
-  toDomain(entity: UserGenrePreferenceEntity): UserGenrePreference {
+    toDomain(entity: UserGenrePreferenceEntity): UserGenrePreference {
     return new UserGenrePreference(
       entity.id,
       entity.userEmotion.id,

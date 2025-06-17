@@ -16,7 +16,7 @@ export class TrackResponse {
   @ApiProperty()
   bpm: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', format: 'float' })
   speechiness: number;
 
   @ApiProperty()
@@ -49,16 +49,16 @@ export class SessionPhaseResponse {
   @ApiProperty()
   toBpm: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', format: 'float' })
   fromSpeechiness: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', format: 'float' })
   toSpeechiness: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', format: 'float' })
   fromEnergy: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: 'number', format: 'float' })
   toEnergy: number;
 
   @ApiProperty({ type: [TrackResponse] })

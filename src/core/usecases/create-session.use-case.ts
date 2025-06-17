@@ -11,6 +11,7 @@ import { Emotion } from '../domain/model/Emotion';
 import { Track } from '../domain/model/Track';
 import { UserGenrePreference } from '../domain/model/UserGenrePreferences';
 import { UserEmotion } from '../domain/model/UserEmotion';
+import { EmotionNotFoundError } from '../domain/error/EmotionNotFoundError';
 
 export type GenerateSessionCommand = {
   userId: number;
@@ -39,10 +40,13 @@ export class GenerateSessionUseCase implements UseCase<GenerateSessionCommand, S
     const startEmotion = await this.emotionRepository.findById(startId);
     const endEmotion = await this.emotionRepository.findById(endId);
 
-    if (!startEmotion || !endEmotion) {
-      throw new Error('One or both emotions not found');
+    if (!startEmotion) {
+      throw new EmotionNotFoundError(startId);
     }
-
+    if (!endEmotion) {
+      throw new EmotionNotFoundError(endId);
+    }
+    
     return [startEmotion, endEmotion];
   }
 

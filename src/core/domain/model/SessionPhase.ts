@@ -32,25 +32,6 @@ export class SessionPhase extends DomainModel {
 
 
 
-    if (phaseNumber < 1) {
-      throw new Error('Phase number must be greater than 0');
-    }
-
-    if (duration <= 0) {
-      throw new Error('Duration must be greater than 0');
-    }
-
-    if (fromBpm <= 0 || toBpm <= 0) {
-      throw new Error('Start and target BPM must be greater than 0');
-    }
-
-    if (fromEnergy < 0 || fromEnergy > 1 || toEnergy < 0 || toEnergy > 1 ) {
-      throw new Error(' Start and target energy must be between 0 and 1');
-    }
-
-    if (fromSpeechiness < 0 || fromSpeechiness > 100 || toSpeechiness < 0 || toSpeechiness > 100 ) {
-      throw new Error('Target speechiness must be between 0 and 100');
-    }
 
     this.sessionId = sessionId;
     this.phaseNumber = phaseNumber;

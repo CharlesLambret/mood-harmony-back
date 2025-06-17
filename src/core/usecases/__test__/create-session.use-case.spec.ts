@@ -72,7 +72,7 @@ describe('GenerateSessionUseCase', () => {
     });
 
     it('should throw if one emotion is missing', async () => {
-      await expect((useCase as any).validateEmotions(999, 1000)).rejects.toThrow('One or both emotions not found');
+      await expect((useCase as any).validateEmotions(999, 1000)).rejects.toThrow('Emotion with id 999 not found');
     });
   });
 
@@ -263,7 +263,7 @@ describe('GenerateSessionUseCase', () => {
         duration: 30
       };
 
-      await expect(useCase.execute(command)).rejects.toThrow('One or both emotions not found');
+      await expect(useCase.execute(command)).rejects.toThrow('Emotion with id 999 not found');
     });
 
     it('should handle cases with no common genres', async () => {
