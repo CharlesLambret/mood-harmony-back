@@ -13,7 +13,6 @@ export class InMemoryUserRepository implements UserRepository {
       data.password,
       data.name,
       data.firstName,
-      data.emotionProfile,
       new Date(),
       new Date(),
     );

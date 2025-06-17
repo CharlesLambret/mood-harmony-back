@@ -63,12 +63,5 @@ export class InMemoryUserEmotionRepository extends userEmotionRepository {
     );
   }
 
-  async findByUserEmotionProfileIdAndEmotionIds(userEmotionProfileId: number, emotionIds: number[]): Promise<UserEmotion[]> {
-    return Array.from(this.userEmotions.values()).filter(
-      ue =>
-        ue.userEmotionProfileId === userEmotionProfileId &&
-        ue.emotion &&
-        emotionIds.includes(ue.emotion.id)
-    );
-  }
+ 
 }

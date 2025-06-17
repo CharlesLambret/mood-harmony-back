@@ -46,6 +46,55 @@ export class PrismaTrackRepository {
     });
     return entities.map(e => this.mapper.toDomain(e));
   }
+  
+  async findByGenreWithCriteria(
+    genreId: number,
+    bpm: number,
+    speechiness: number,
+    energy: number,
+    tolerance: number,
+    limit: number
+  ): Promise<Track[]> {
+    const entities = await this.prisma.track.findMany({
+      where: {
+        genreId,
+        bpm: { gte: bpm - tolerance, lte: bpm + tolerance },
+        speechiness: { gte: speechiness - tolerance, lte: speechiness + tolerance },
+        energy: { gte: energy - tolerance, lte: energy + tolerance },
+      },
+      include: { genre: true },
+      take: limit,
+      orderBy: { id: 'asc' },
+    });
+    return entities.map(e => this.mapper.toDomain(e));
+  }
+
+  async findByGenreWithTransition(
+    genreId: number,
+    fromBpm: number, toBpm: number,
+    fromSpeechiness: number, toSpeechiness: number,
+    fromEnergy: number, toEnergy: number,
+    maxDifference: number,
+    limit: number
+  ): Promise<Track[]> {
+    const entities = await this.prisma.track.findMany({
+      where: {
+        genreId,
+        AND: [
+          { bpm: { gte: fromBpm - maxDifference, lte: fromBpm + maxDifference } },
+          { bpm: { gte: toBpm - maxDifference, lte: toBpm + maxDifference } },
+          { speechiness: { gte: fromSpeechiness - maxDifference, lte: fromSpeechiness + maxDifference } },
+          { speechiness: { gte: toSpeechiness - maxDifference, lte: toSpeechiness + maxDifference } },
+          { energy: { gte: fromEnergy - maxDifference, lte: fromEnergy + maxDifference } },
+          { energy: { gte: toEnergy - maxDifference, lte: toEnergy + maxDifference } },
+        ],
+      },
+      include: { genre: true },
+      take: limit,
+      orderBy: { id: 'asc' },
+    });
+    return entities.map(e => this.mapper.toDomain(e));
+  }
 
   async update(id: number, track: Track): Promise<Track | null> {
     const entity = this.mapper.fromDomain(track);
@@ -73,4 +122,5 @@ export class PrismaTrackRepository {
   async remove(id: number): Promise<void> {
     await this.prisma.track.delete({ where: { id } });
   }
+
 }

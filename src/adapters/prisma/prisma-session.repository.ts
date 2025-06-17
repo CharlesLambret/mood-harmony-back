@@ -113,17 +113,17 @@ export class PrismaSessionRepository implements SessionRepository {
     const userProfile = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
-        emoProfile: true
+        emotionProfile: true
       }
     });
 
-    if (!userProfile || !userProfile.emoProfile) {
+    if (!userProfile || !userProfile.emotionProfileId) {
       return [];
     }
 
     const entities = await this.prisma.session.findMany({
       where: { 
-        userEmotionProfileId: userProfile.emoProfile.id
+        userEmotionProfileId: userProfile.emotionProfileId
       },
       include: {
         fromEmotion: true,

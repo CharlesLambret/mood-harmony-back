@@ -4,7 +4,7 @@ CREATE TABLE "User" (
     "EmoProfileId" INTEGER NOT NULL,
     "name" TEXT NOT NULL,
     "first_name" TEXT NOT NULL,
-    "passwordHash" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "phoneNumber" TEXT NOT NULL,
 

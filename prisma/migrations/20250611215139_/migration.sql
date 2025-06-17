@@ -8,7 +8,7 @@
   - The primary key for the `SessionTrack` table will be changed. If it partially fails, the table could be left without primary key constraint.
   - You are about to drop the column `sessionId` on the `SessionTrack` table. All the data in the column will be lost.
   - You are about to drop the column `EmoProfileId` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `passwordHash` on the `User` table. All the data in the column will be lost.
+  - You are about to drop the column `password` on the `User` table. All the data in the column will be lost.
   - You are about to drop the column `phoneNumber` on the `User` table. All the data in the column will be lost.
   - You are about to drop the column `userId` on the `UserEmotionProfile` table. All the data in the column will be lost.
   - A unique constraint covering the columns `[emoProfileId]` on the table `User` will be added. If there are existing duplicate values, this will fail.
@@ -54,7 +54,7 @@ ADD CONSTRAINT "SessionTrack_pkey" PRIMARY KEY ("sessionPhaseId", "trackId");
 
 -- AlterTable
 ALTER TABLE "User" DROP COLUMN "EmoProfileId",
-DROP COLUMN "passwordHash",
+DROP COLUMN "password",
 DROP COLUMN "phoneNumber",
 ADD COLUMN     "emoProfileId" INTEGER NOT NULL,
 ADD COLUMN     "password_hash" TEXT NOT NULL,

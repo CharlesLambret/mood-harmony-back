@@ -12,6 +12,7 @@ export class InMemoryUserEmotionalProfileRepository extends UserEmotionalProfile
     const profile = new UserEmotionalProfile(
       id,
       data.userEmotions ?? [],
+      data.userId ?? 0,
       data.updatedAt,
       data.createdAt
     );
@@ -33,6 +34,7 @@ export class InMemoryUserEmotionalProfileRepository extends UserEmotionalProfile
     const updated = new UserEmotionalProfile(
       id,
       data.userEmotions ?? existing.userEmotions,
+      data.userId ?? existing.userId,
       data.updatedAt ?? new Date(),
       data.createdAt ?? existing.createdAt
     );
@@ -49,13 +51,6 @@ export class InMemoryUserEmotionalProfileRepository extends UserEmotionalProfile
   }
 
   async findByUserId(userId: number): Promise<UserEmotionalProfile[]> {
-    // Si tu ajoutes un champ userId dans UserEmotionalProfile, adapte ici.
-    // Sinon, il faut une logique métier pour relier userId à un profil.
-    // Ici, on suppose que chaque profil a un userEmotions[] dont chaque UserEmotion a potentiellement un userId dans ses préférences.
-    return Array.from(this.profiles.values()).filter(profile =>
-      profile.userEmotions.some(ue =>
-        ue.userGenrePreferences.some(pref => pref.useremotionId === userId)
-      )
-    );
+    return Array.from(this.profiles.values()).filter(profile => profile.userId === userId);
   }
 }

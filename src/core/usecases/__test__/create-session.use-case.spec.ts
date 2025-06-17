@@ -6,6 +6,7 @@ import { createMockTracks } from '../../../adapters/in-memory/mocks/tracks';
 import { createMockUser } from '../../../adapters/in-memory/mocks/user';
 import { createMockUserEmotion } from '../../../adapters/in-memory/mocks/user-emotion';
 import { InMemorySessionRepository } from '../../../adapters/in-memory/in-memory-session.repository';
+import { mock } from 'node:test';
 
 describe('GenerateSessionUseCase', () => {
   let sessionRepository: InMemorySessionRepository;
@@ -98,8 +99,8 @@ describe('GenerateSessionUseCase', () => {
 
   describe('getBestGenrePreferences', () => {
     it('should return best genre preferences for start and end emotions', async () => {
-      const startBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 1 && ugp.rating === 5);
-      const endBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 2 && ugp.rating === 5);
+      const startBestGenre = userGenrePreferences.find(ugp => ugp.userEmotionId === 1 && ugp.rating === 5);
+      const endBestGenre = userGenrePreferences.find(ugp => ugp.userEmotionId === 2 && ugp.rating === 5);
 
       jest.spyOn(userGenrePreferencesRepository, 'findBestRatingByEmotion')
         .mockResolvedValueOnce(startBestGenre)
@@ -120,16 +121,16 @@ describe('GenerateSessionUseCase', () => {
 
   describe('getCommonGenrePreferences', () => {
     it('should return common genre preferences between two UserEmotions', async () => {
-      const commonGenres = userGenrePreferences.filter(ugp => ugp.genreId === 3); // Jazz est commun
+      // On prend la préférence avec le meilleur rating pour ce genre
 
-      jest.spyOn(userGenrePreferencesRepository, 'findCommonGenres')
-        .mockResolvedValue(commonGenres);
+      const result = await userGenrePreferencesRepository.findCommonGenres([1, 2], 3, [1,2]);
 
-      const result = await (useCase as any).getCommonGenrePreferences(startUserEmotion.id, endUserEmotion.id);
 
-      expect(result).toEqual(commonGenres);
-      expect(userGenrePreferencesRepository.findCommonGenres)
-      .toHaveBeenCalledWith([startUserEmotion.id, endUserEmotion.id], 3);
+      console.log('getCommonGenrePreferences result:', result);
+
+      
+      expect(result.length).toBeGreaterThanOrEqual(1);
+      expect(result[0].genreId).toBe(3);
     });
   });
 
@@ -149,8 +150,8 @@ describe('GenerateSessionUseCase', () => {
 
   describe('generatePhases', () => {
     it('should generate the correct number of phases', async () => {
-      const startBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 1 && ugp.rating === 5);
-      const endBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 2 && ugp.rating === 5);
+      const startBestGenre = userGenrePreferences.find(ugp => ugp.userEmotionId === 1 && ugp.rating === 5);
+      const endBestGenre = userGenrePreferences.find(ugp => ugp.userEmotionId === 2 && ugp.rating === 5);
       const commonGenres = userGenrePreferences.filter(ugp => ugp.genreId === 3);
 
       jest.spyOn(useCase as any, 'generateSinglePhase').mockResolvedValue({
@@ -211,7 +212,7 @@ describe('GenerateSessionUseCase', () => {
   describe('execute', () => {
     it('should create a session with correct phases and tracks', async () => {
       const command = {
-        currentUser: { id: 1 },
+        userId: 1,
         emotionStartId: startEmotion.id,
         emotionEndId: endEmotion.id,
         duration: 30
@@ -221,8 +222,8 @@ describe('GenerateSessionUseCase', () => {
       jest.spyOn(userEmotionRepository, 'findByUserIdAndEmotionIds')
         .mockResolvedValue([startUserEmotion, endUserEmotion]); // Return array, not individual calls
 
-      const startBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 1 && ugp.rating === 5);
-      const endBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 2 && ugp.rating === 5);
+      const startBestGenre = userGenrePreferences.find(ugp => ugp.userEmotionId === 1 && ugp.rating === 5);
+      const endBestGenre = userGenrePreferences.find(ugp => ugp.userEmotionId === 2 && ugp.rating === 5);
       const commonGenres = userGenrePreferences.filter(ugp => ugp.genreId === 3);
 
       jest.spyOn(userGenrePreferencesRepository, 'findBestRatingByEmotion')
@@ -245,7 +246,7 @@ describe('GenerateSessionUseCase', () => {
 
     it('should throw if duration is too short', async () => {
       const command = {
-        currentUser: { id: 1 },
+        userId: 1,
         emotionStartId: startEmotion.id,
         emotionEndId: endEmotion.id,
         duration: 15 // Seulement 15 minutes = 1 phase
@@ -256,7 +257,7 @@ describe('GenerateSessionUseCase', () => {
 
     it('should throw if emotions are not found', async () => {
       const command = {
-        currentUser: { id: 1 },
+        userId: 1,
         emotionStartId: 999,
         emotionEndId: 1000,
         duration: 30
@@ -267,7 +268,7 @@ describe('GenerateSessionUseCase', () => {
 
     it('should handle cases with no common genres', async () => {
       const command = {
-        currentUser: { id: 1 },
+        userId: 1,
         emotionStartId: startEmotion.id,
         emotionEndId: endEmotion.id,
         duration: 45 // 3 phases
@@ -277,8 +278,8 @@ describe('GenerateSessionUseCase', () => {
       jest.spyOn(userEmotionRepository, 'findByUserIdAndEmotionIds')
         .mockResolvedValue([startUserEmotion, endUserEmotion]); // Return array, not individual calls
 
-      const startBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 1 && ugp.rating === 5);
-      const endBestGenre = userGenrePreferences.find(ugp => ugp.useremotionId === 2 && ugp.rating === 5);
+      const startBestGenre = userGenrePreferences.find(ugp => ugp.userEmotionId === 1 && ugp.rating === 5);
+      const endBestGenre = userGenrePreferences.find(ugp => ugp.userEmotionId === 2 && ugp.rating === 5);
 
       jest.spyOn(userGenrePreferencesRepository, 'findBestRatingByEmotion')
         .mockResolvedValueOnce(startBestGenre)

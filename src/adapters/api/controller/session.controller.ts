@@ -40,7 +40,7 @@ export class SessionController {
     @CurrentUser() currentUser: ProfileRequest,
     @Body() body: GenerateSessionRequest,
   ): Promise<GenerateSessionResponse> {
-    const command = GenerateSessionMapper.toDomain(currentUser, body);
+    const command = GenerateSessionMapper.toDomain(body);
     const session = await this.generateSessionUseCase.execute(command);
     return GenerateSessionMapper.fromDomain(session);
   }

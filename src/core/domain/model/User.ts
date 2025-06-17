@@ -2,23 +2,25 @@ import { DomainModel } from '../../base/domain-model';
 import { UserEmotionalProfile } from './UserEmotionalProfile';
 
 export class User extends DomainModel {
+  emotionProfile?: UserEmotionalProfile; // Made optional
+
   email: string;
   password: string;
   name: string;
   firstName: string;
-  emotionProfile : UserEmotionalProfile;
   updatedAt: Date;
   createdAt: Date;
 
   constructor(
     id: number,
-    email: string,
-    password: string,
     name: string,
     firstName: string,
-    emotionProfile : UserEmotionalProfile,
+    password: string,
+    email: string,
     updatedAt?: Date,
     createdAt?: Date,
+    emotionProfile?: UserEmotionalProfile, // Made optional
+
   ) {
     super(id);
     this.email = email;

@@ -1,62 +1,97 @@
 import { Injectable } from '@nestjs/common';
 import { userEmotionRepository } from '../../core/domain/repository/user-emotion.repository';
 import { UserEmotion } from '../../core/domain/model/UserEmotion';
+import { PrismaService } from './prisma.service';
+import { PrismaUserEmotionMapper } from './mapper/prisma-user-emotion.mapper';
 
 @Injectable()
-export class InMemoryUserEmotionRepository extends userEmotionRepository {
-  private userEmotions: Map<number, UserEmotion> = new Map();
-  private autoIncrement = 1;
+export class PrismaUserEmotionRepository extends userEmotionRepository {
+  private mapper: PrismaUserEmotionMapper;
+
+  constructor(private readonly prisma: PrismaService) {
+    super();
+    this.mapper = new PrismaUserEmotionMapper();
+  }
 
   async create(data: Partial<UserEmotion>): Promise<UserEmotion> {
-    const id = data.id ?? this.autoIncrement++;
-    const userEmotion = new UserEmotion(
-      id,
-      data.emotion!,
-      data.userId!,
-      data.userEmotionProfileId!,
-      data.userGenrePreferences ?? [],
-      data.updatedAt,
-      data.createdAt
-    );
-    this.userEmotions.set(id, userEmotion);
-    return userEmotion;
+    const created = await this.prisma.userEmotion.create({
+      data: {
+        emotionId: data.emotion!.id,
+        userId: data.userId!,
+        userEmotionProfileId: data.userEmotionProfileId!,
+        // Les préférences sont à créer séparément si besoin
+      },
+      include: {
+        emotion: true,
+        userGenrePreferences: true,
+      },
+    });
+    return this.mapper.toDomain(created);
   }
 
   async findById(id: number): Promise<UserEmotion | null> {
-    return this.userEmotions.get(id) || null;
+    const entity = await this.prisma.userEmotion.findUnique({
+      where: { id },
+      include: {
+        emotion: true,
+        userGenrePreferences: true,
+      },
+    });
+    return entity ? this.mapper.toDomain(entity) : null;
   }
 
   async findAll(): Promise<UserEmotion[]> {
-    return Array.from(this.userEmotions.values());
+    const entities = await this.prisma.userEmotion.findMany({
+      include: {
+        emotion: true,
+        userGenrePreferences: true,
+      },
+      orderBy: { id: 'asc' },
+    });
+    return entities.map(e => this.mapper.toDomain(e));
   }
 
   async update(id: number, data: Partial<UserEmotion>): Promise<UserEmotion | null> {
-    const existing = this.userEmotions.get(id);
-    if (!existing) return null;
-    const updated = new UserEmotion(
-      id,
-      data.emotion ?? existing.emotion,
-      data.userId ?? existing.userId,
-      data.userEmotionProfileId ?? existing.userEmotionProfileId,
-      data.userGenrePreferences ?? existing.userGenrePreferences,
-      data.updatedAt ?? new Date(),
-      data.createdAt ?? existing.createdAt
-    );
-    this.userEmotions.set(id, updated);
-    return updated;
+    try {
+      const updated = await this.prisma.userEmotion.update({
+        where: { id },
+        data: {
+          emotionId: data.emotion?.id,
+          userId: data.userId,
+          userEmotionProfileId: data.userEmotionProfileId,
+          // Les préférences sont à gérer séparément si besoin
+        },
+        include: {
+          emotion: true,
+          userGenrePreferences: true,
+        },
+      });
+      return this.mapper.toDomain(updated);
+    } catch {
+      return null;
+    }
   }
 
   async remove(id: number): Promise<void> {
-    this.userEmotions.delete(id);
+    await this.prisma.userEmotion.delete({ where: { id } });
   }
 
   async removeAll(): Promise<void> {
-    this.userEmotions.clear();
+    await this.prisma.userEmotion.deleteMany();
   }
 
   async findByUserIdAndEmotionIds(userId: number, emotionIds: number[]): Promise<UserEmotion[]> {
-    return Array.from(this.userEmotions.values()).filter(
-      ue => ue.userId === userId && emotionIds.includes(ue.emotion.id)
-    );
+    const entities = await this.prisma.userEmotion.findMany({
+      where: {
+        userId,
+        emotionId: { in: emotionIds },
+      },
+      include: {
+        emotion: true,
+        userGenrePreferences: true,
+      },
+      orderBy: { id: 'asc' },
+    });
+    return entities.map(e => this.mapper.toDomain(e));
   }
 }

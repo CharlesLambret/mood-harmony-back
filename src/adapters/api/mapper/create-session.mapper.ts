@@ -2,17 +2,13 @@ import { GenerateSessionCommand } from '../../../core/usecases/create-session.us
 import { GenerateSessionRequest } from '../request/create-session.request';
 import { Session } from '../../../core/domain/model/Session';
 import { GenerateSessionResponse, SessionPhaseResponse, TrackResponse } from '../response/create-session.response';
-import { ProfileRequest } from '../request/profile.request';
 
 export class GenerateSessionMapper {
   static toDomain(
-    currentUser: ProfileRequest,
     request: GenerateSessionRequest,
   ): GenerateSessionCommand {
     return {
-      currentUser: {
-        id: currentUser.id,
-      },
+      userId: request.userId,
       emotionStartId: request.emotionStartId,
       emotionEndId: request.emotionEndId,
       duration: request.duration,

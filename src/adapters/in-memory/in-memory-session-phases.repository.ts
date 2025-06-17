@@ -11,7 +11,6 @@ export class InMemorySessionPhaseRepository extends SessionPhaseRepository {
     const id = data.id ?? this.autoIncrement++;
     const phase = new SessionPhase(
       id,
-      data.sessionId!,
       data.phaseNumber!,
       data.duration!,
       data.fromBpm!,
@@ -20,7 +19,8 @@ export class InMemorySessionPhaseRepository extends SessionPhaseRepository {
       data.toSpeechiness!,
       data.fromEnergy!,
       data.toEnergy!,
-      data.tracks ?? []
+      data.tracks ?? [],
+      data.sessionId
     );
     this.phases.set(id, phase);
     return phase;
@@ -39,7 +39,6 @@ export class InMemorySessionPhaseRepository extends SessionPhaseRepository {
     if (!existing) return null;
     const updated = new SessionPhase(
       id,
-      data.sessionId ?? existing.sessionId,
       data.phaseNumber ?? existing.phaseNumber,
       data.duration ?? existing.duration,
       data.fromBpm ?? existing.fromBpm,
@@ -48,7 +47,8 @@ export class InMemorySessionPhaseRepository extends SessionPhaseRepository {
       data.toSpeechiness ?? existing.toSpeechiness,
       data.fromEnergy ?? existing.fromEnergy,
       data.toEnergy ?? existing.toEnergy,
-      data.tracks ?? existing.tracks
+      data.tracks ?? existing.tracks,
+      data.sessionId ?? existing.sessionId
     );
     this.phases.set(id, updated);
     return updated;

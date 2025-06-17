@@ -6,25 +6,25 @@ import { Emotion } from '../../../../core/domain/model/Emotion';
 import { SessionPhase } from '../../../../core/domain/model/SessionPhase';
 import { Track } from '../../../../core/domain/model/Track';
 import { Genre } from '../../../../core/domain/model/Genre';
-import { userWithEmotionProfileMock } from './mocks/userEmotionalProfile';
+import { createMockUser } from '../../../../adapters/in-memory/mocks/user';
+
+
+let user: any;
+beforeAll(async () => {
+  user = await createMockUser();
+});
 describe('GenerateSessionMapper', () => {
   describe('toDomain', () => {
       it('should map ProfileRequest and GenerateSessionRequest to GenerateSessionCommand', () => {
         // Utilisation du mock pour le profil utilisateur
-        const profile = {
-          id: userWithEmotionProfileMock.id,
-          email: userWithEmotionProfileMock.email,
-          name: userWithEmotionProfileMock.name,
-          firstName: userWithEmotionProfileMock.firstName,
-          emotionProfile: userWithEmotionProfileMock.emotionProfile,
-        };
 
-        const request = new GenerateSessionRequest(2, 3, 45);
 
-        const command = GenerateSessionMapper.toDomain(profile, request);
+        const request = new GenerateSessionRequest(1,2, 3, 45);
+
+        const command = GenerateSessionMapper.toDomain(request);
 
         expect(command).toEqual({
-          currentUser: { id: userWithEmotionProfileMock.id },
+          userId: 1,
           emotionStartId: 2,
           emotionEndId: 3,
           duration: 45,

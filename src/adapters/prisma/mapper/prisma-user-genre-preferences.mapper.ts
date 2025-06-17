@@ -24,7 +24,7 @@ export class PrismaUserGenrePreferenceMapper implements EntityMapper<UserGenrePr
     return {
       id: model.id,
       userEmotion: {
-        id: model.useremotionId,
+        id: model.userEmotionId,
       },
       genre: {
         id: model.genreId,

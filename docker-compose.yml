@@ -23,14 +23,34 @@ services:
     ports:
       - '8080:80'
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
       - nestjs-network
     depends_on:
       - postgres
+      
+  # nestjs:
+  #   build: .
+  #   container_name: mood-harmony-back
+  #   restart: unless-stopped
+  #   ports:
+  #     - '3000:3000'
+  #   environment:
+  #     - DATABASE_URL=${DATABASE_URL}
+  #     - POSTGRES_HOST=${POSTGRES_HOST}
+  #     - POSTGRES_PORT=${POSTGRES_PORT}
+  #     - POSTGRES_USER=${POSTGRES_USER}
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #     - POSTGRES_DB=${POSTGRES_DB}
+  #     - SPOTIFY_SECRET=${SPOTIFY_SECRET}
+  #     - SPOTIFY_ID=${SPOTIFY_ID}
+  #   depends_on:
+  #     - postgres
+  #   networks:
+  #     - nestjs-network
 
 volumes:
   postgres_data:
