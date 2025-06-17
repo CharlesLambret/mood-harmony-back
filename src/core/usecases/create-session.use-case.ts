@@ -183,7 +183,7 @@ export class GenerateSessionUseCase implements UseCase<GenerateSessionCommand, S
       phaseValues.bpm,
       phaseValues.speechiness,
       phaseValues.energy,
-      0.1, // 10% de tolérance maximum
+      10, // 10% de tolérance maximum
       10 // Récupérer plus de tracks pour pouvoir les trier
     );
 
@@ -249,6 +249,7 @@ export class GenerateSessionUseCase implements UseCase<GenerateSessionCommand, S
     };
   }
 
+
   async execute(command: GenerateSessionCommand): Promise<Session> {
     const { userId, emotionStartId, emotionEndId, duration } = command;
 
@@ -265,9 +266,19 @@ export class GenerateSessionUseCase implements UseCase<GenerateSessionCommand, S
     // 3. Récupération des UserEmotions correspondantes
     const userEmotions = await this.getUserEmotions(userId, [emotionStartId, emotionEndId]);
     console.log('UserEmotions récupérés:', userEmotions);
+
+    // 3.1. AJOUT: Récupérer le userEmotionProfileId depuis le premier UserEmotion
+    // Tous les UserEmotions d'un utilisateur devraient avoir le même userEmotionProfileId
+    const userEmotionProfileId = userEmotions[0].userEmotionProfileId;
+    
+    if (!userEmotionProfileId) {
+      throw new Error('UserEmotionProfileId not found for user');
+    }
+
     // 4. Récupération des meilleurs genres pour start et end
     const [startBestGenre, endBestGenre] = await this.getBestGenrePreferences(userEmotions);
     console.log('Meilleurs genres récupérés:', startBestGenre, endBestGenre);
+
     // 5. Récupération des genres communs pour les phases intermédiaires
     const userEmotionIds = userEmotions.map(ue => ue.id);
     const limit = numberOfPhases - 2;
@@ -288,10 +299,10 @@ export class GenerateSessionUseCase implements UseCase<GenerateSessionCommand, S
       commonGenres
     );
 
-    // 7. Création de la session
+    // 7. Création de la session avec le bon userEmotionProfileId
     const session = new Session(
       0,
-      userId,
+      userEmotionProfileId, // ✅ CORRECTION: utiliser userEmotionProfileId au lieu de userId
       duration,
       startEmotion,
       endEmotion,
